@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EarlyWatch - Risk Dashboard</title>
+  <link rel="stylesheet" href="assets/adviserstyle.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">
+        <i data-lucide="layers"></i>
+      </div>
+      <div>
+        <div class="brand-name">EarlyWatch</div>
+        <div class="brand-sub">Adviser</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active">
+        <i data-lucide="layout-grid"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="student-records.html" class="nav-item">
+        <i data-lucide="users"></i>
+        <span>Student Records</span>
+      </a>
+      <a href="interventions.html" class="nav-item">
+        <i data-lucide="clipboard-list"></i>
+        <span>Interventions</span>
+      </a>
+      <a href="alerts.html" class="nav-item">
+        <i data-lucide="bell"></i>
+        <span>Alerts</span>
+        <span class="badge red">7</span>
+      </a>
+    </nav>
+
+    <div class="user-profile">
+      <div class="avatar">DM</div>
+      <div class="user-info">
+        <div class="user-name">Dr. Carl Domenic Reyes</div>
+        <div class="user-role">Adviser</div>
+      <a href="index.html" class="nav-item">
+    <i data-lucide="log-out" class="logout-icon"></i>
+    <span>Logout</span>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    
+    <!-- Top Header -->
+    <header class="header">
+      <h1>Risk Dashboard</h1>
+      <p class="subtitle">Academic Year 2026–2027 · 1st Semester · Updated September 15, 2026</p>
+    </header>
+
+    <!-- Metric Cards -->
+    <section class="metrics-grid">
+      <div class="metric-card critical">
+        <div class="metric-value">2</div>
+        <div class="metric-label">Critical Risk</div>
+        <div class="metric-sub">Immediate action required</div>
+      </div>
+
+      <div class="metric-card high">
+        <div class="metric-value">2</div>
+        <div class="metric-label">High Risk</div>
+        <div class="metric-sub">Intervention underway</div>
+      </div>
+
+      <div class="metric-card medium">
+        <div class="metric-value">1</div>
+        <div class="metric-label">Medium Risk</div>
+        <div class="metric-sub">Monitoring closely</div>
+      </div>
+
+      <div class="metric-card open-cases">
+        <div class="metric-value">2</div>
+        <div class="metric-label">Open Cases</div>
+        <div class="metric-sub">2 in progress</div>
+      </div>
+    </section>
+
+    <!-- Warning Alert Banner -->
+    <div class="alert-banner">
+      <i data-lucide="triangle-alert"></i>
+      <span><strong>7 unacknowledged alerts</strong> require your attention across 4 students.</span>
+    </div>
+
+    <!-- Dashboard Content Split -->
+    <div class="dashboard-grid">
+      
+      <!-- Table Section -->
+      <section class="table-card">
+        <div class="table-header">
+          <h3>Priority Students</h3>
+          <span class="sort-text">Sorted by risk score</span>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Course / Section</th>
+                <th>Risk</th>
+                <th>GPA</th>
+                <th>Attend.</th>
+                <th>Case</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="student-name">Liam Bautista</div>
+                  <div class="student-id">2021-09234</div>
+                </td>
+                <td>
+                  <div>Computer Engineering</div>
+                  <div class="text-muted">CpE3-A</div>
+                </td>
+                <td>
+                  <span class="tag tag-critical">Critical</span>
+                  <div class="text-muted sub-score">97/100</div>
+                </td>
+                <td class="text-danger font-bold">1.50</td>
+                <td class="text-danger font-bold">49%</td>
+                <td><span class="text-danger font-bold">Open</span></td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="student-name">Marco Dela Cruz</div>
+                  <div class="student-id">2021-10432</div>
+                </td>
+                <td>
+                  <div>Computer Science</div>
+                  <div class="text-muted">CS3-A</div>
+                </td>
+                <td>
+                  <span class="tag tag-critical">Critical</span>
+                  <div class="text-muted sub-score">91/100</div>
+                </td>
+                <td class="text-danger font-bold">1.75</td>
+                <td class="text-danger font-bold">58%</td>
+                <td><span class="text-danger font-bold">Open</span></td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="student-name">Rina Castillo</div>
+                  <div class="student-id">2021-11089</div>
+                </td>
+                <td>
+                  <div>Computer Science</div>
+                  <div class="text-muted">CS3-B</div>
+                </td>
+                <td>
+                  <span class="tag tag-high">High</span>
+                  <div class="text-muted sub-score">79/100</div>
+                </td>
+                <td class="text-warning font-bold">1.90</td>
+                <td class="text-warning font-bold">67%</td>
+                <td><span class="text-warning font-bold">In-Progress</span></td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="student-name">Sophia Navarro</div>
+                  <div class="student-id">2022-08871</div>
+                </td>
+                <td>
+                  <div>Information Technology</div>
+                  <div class="text-muted">IT2-B</div>
+                </td>
+                <td>
+                  <span class="tag tag-high">High</span>
+                  <div class="text-muted sub-score">74/100</div>
+                </td>
+                <td class="text-warning font-bold">2.10</td>
+                <td class="text-warning font-bold">72%</td>
+                <td><span class="text-warning font-bold">In-Progress</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Right Column Widgets -->
+      <aside class="widget-column">
+        
+        <!-- Risk Distribution Widget -->
+        <div class="widget-card">
+          <h3>Risk Distribution</h3>
+          <div class="progress-list">
+            <div class="progress-item">
+              <div class="progress-label"><span>Critical</span><span>2</span></div>
+              <div class="progress-bar"><div class="fill critical" style="width: 50%;"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label"><span>High</span><span>2</span></div>
+              <div class="progress-bar"><div class="fill high" style="width: 50%;"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label"><span>Medium</span><span>1</span></div>
+              <div class="progress-bar"><div class="fill medium" style="width: 25%;"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label"><span>Low</span><span>1</span></div>
+              <div class="progress-bar"><div class="fill low" style="width: 25%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case Status Widget -->
+        <div class="widget-card">
+          <h3>Case Status</h3>
+          <ul class="status-list">
+            <li>
+              <span class="status-dot critical"></span>
+              <span class="status-name">Open</span>
+              <span class="status-count">2</span>
+            </li>
+            <li>
+              <span class="status-dot high"></span>
+              <span class="status-name">In Progress</span>
+              <span class="status-count">2</span>
+            </li>
+            <li>
+              <span class="status-dot medium"></span>
+              <span class="status-name">Monitoring</span>
+              <span class="status-count">1</span>
+            </li>
+            <li>
+              <span class="status-dot low"></span>
+              <span class="status-name">Resolved</span>
+              <span class="status-count">1</span>
+            </li>
+          </ul>
+        </div>
+
+      </aside>
+
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    lucide.createIcons();
+</script>
+<script src="js/auth.js"></script>
+</body>
+</html>

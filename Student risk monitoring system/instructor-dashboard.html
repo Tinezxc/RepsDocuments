@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EarlyWatch - Instructor Dashboard</title>
+  <link rel="stylesheet" href="assets/instructor.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon"><i data-lucide="layers"></i></div>
+      <div>
+        <div class="brand-name">EarlyWatch</div>
+        <div class="brand-sub">Instructor</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="instructor-dashboard.html" class="nav-item active">
+        <i data-lucide="layout-grid"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="instructor-student-records.html" class="nav-item">
+        <i data-lucide="users"></i>
+        <span>Student Records</span>
+      </a>
+      <a href="interventions.html" class="nav-item">
+        <i data-lucide="clipboard-list"></i>
+        <span>Interventions</span>
+      </a>
+      <a href="alerts.html" class="nav-item">
+        <i data-lucide="bell"></i>
+        <span>Alerts</span>
+        <span class="badge red">7</span>
+      </a>
+    </nav>
+
+    <div class="user-profile">
+      <div class="avatar" data-user-initials>PJ</div>
+      <div class="user-info">
+        <div class="user-name" data-user-name>Prof. Jovic pogi</div>
+        <div class="user-role" data-user-role>Instructor</div>
+      </div>
+      <a href="index.html" class="nav-item">
+    <i data-lucide="log-out" class="logout-icon"></i>
+    <span>Logout</span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <header class="header">
+      <h1>Instructor Dashboard</h1>
+      <p class="subtitle">Academic Year 2026–2027 · 1st Semester · Updated September 15, 2026</p>
+    </header>
+
+    <!-- Metrics -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value">4</div>
+        <div class="metric-label">My Sections</div>
+        <div class="metric-sub">156 students total</div>
+      </div>
+
+      <div class="metric-card critical">
+        <div class="metric-value">4</div>
+        <div class="metric-label">At-Risk Students</div>
+        <div class="metric-sub">In my classes</div>
+      </div>
+
+      <div class="metric-card high">
+        <div class="metric-value">2</div>
+        <div class="metric-label">Pending Interventions</div>
+        <div class="metric-sub">Awaiting outcome</div>
+      </div>
+
+      <div class="metric-card open-cases">
+        <div class="metric-value">87%</div>
+        <div class="metric-label">Avg. Attendance</div>
+        <div class="metric-sub">Across all sections</div>
+      </div>
+    </section>
+
+    <!-- Alert Banner -->
+    <div class="alert-banner">
+      <i data-lucide="triangle-alert"></i>
+      <span><strong>4 students in your sections</strong> have crossed the risk threshold this term.</span>
+    </div>
+
+    <div class="dashboard-grid">
+
+      <!-- Table -->
+      <section class="table-card">
+        <div class="table-header">
+          <h3>At-Risk Students in My Classes</h3>
+          <span class="sort-text">Sorted by risk score</span>
+        </div>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Course / Section</th>
+                <th>Risk</th>
+                <th>GPA</th>
+                <th>Attend.</th>
+                <th>Case</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="student-name">Liam Bautista</div>
+                  <div class="student-id">2021-09234</div>
+                </td>
+                <td>
+                  <div>Computer Engineering</div>
+                  <div class="text-muted">CpE3-A</div>
+                </td>
+                <td>
+                  <span class="tag tag-critical">Critical</span>
+                  <div class="text-muted sub-score">97/100</div>
+                </td>
+                <td class="text-danger font-bold">1.50</td>
+                <td class="text-danger font-bold">49%</td>
+                <td><span class="text-danger font-bold">Open</span></td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="student-name">Marco Dela Cruz</div>
+                  <div class="student-id">2021-10432</div>
+                </td>
+                <td>
+                  <div>Computer Science</div>
+                  <div class="text-muted">CS3-A</div>
+                </td>
+                <td>
+                  <span class="tag tag-critical">Critical</span>
+                  <div class="text-muted sub-score">91/100</div>
+                </td>
+                <td class="text-danger font-bold">1.75</td>
+                <td class="text-danger font-bold">58%</td>
+                <td><span class="text-danger font-bold">Open</span></td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="student-name">Rina Castillo</div>
+                  <div class="student-id">2021-11089</div>
+                </td>
+                <td>
+                  <div>Computer Science</div>
+                  <div class="text-muted">CS3-B</div>
+                </td>
+                <td>
+                  <span class="tag tag-high">High</span>
+                  <div class="text-muted sub-score">79/100</div>
+                </td>
+                <td class="text-warning font-bold">1.90</td>
+                <td class="text-warning font-bold">67%</td>
+                <td><span class="text-warning font-bold">In-Progress</span></td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="student-name">Sophia Navarro</div>
+                  <div class="student-id">2022-08871</div>
+                </td>
+                <td>
+                  <div>Information Technology</div>
+                  <div class="text-muted">IT2-B</div>
+                </td>
+                <td>
+                  <span class="tag tag-high">High</span>
+                  <div class="text-muted sub-score">74/100</div>
+                </td>
+                <td class="text-warning font-bold">2.10</td>
+                <td class="text-warning font-bold">72%</td>
+                <td><span class="text-warning font-bold">In-Progress</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Widgets -->
+      <aside class="widget-column">
+
+        <div class="widget-card">
+          <h3>My Sections</h3>
+          <ul class="section-list">
+            <li>
+              <div>
+                <div class="section-name">CCPROG3</div>
+                <div class="section-sub">Computer Programming 3 · CpE3-A</div>
+              </div>
+              <div class="section-stat">
+                <span class="section-count">42</span>
+                <span class="section-risk">2 at-risk</span>
+              </div>
+            </li>
+
+            <li>
+              <div>
+                <div class="section-name">MATH136</div>
+                <div class="section-sub">Calculus 1 · CS3-A</div>
+              </div>
+              <div class="section-stat">
+                <span class="section-count">38</span>
+                <span class="section-risk">1 at-risk</span>
+              </div>
+            </li>
+
+            <li>
+              <div>
+                <div class="section-name">CCPROG3</div>
+                <div class="section-sub">Computer Programming 3 · CS3-B</div>
+              </div>
+              <div class="section-stat">
+                <span class="section-count">40</span>
+                <span class="section-risk">1 at-risk</span>
+              </div>
+            </li>
+
+            <li>
+              <div>
+                <div class="section-name">ITEC55</div>
+                <div class="section-sub">Web Systems · IT2-B</div>
+              </div>
+              <div class="section-stat">
+                <span class="section-count">36</span>
+                <div class="section-risk">1 at-risk</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="widget-card">
+          <h3>Risk Distribution</h3>
+          <div class="progress-list">
+            <div class="progress-item">
+              <div class="progress-label"><span>Critical</span><span>2</span></div>
+              <div class="progress-bar"><div class="fill critical" style="width: 50%;"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label"><span>High</span><span>2</span></div>
+              <div class="progress-bar"><div class="fill high" style="width: 50%;"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label"><span>Medium</span><span>0</span></div>
+              <div class="progress-bar"><div class="fill medium" style="width: 0%;"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label"><span>Low</span><span>0</span></div>
+              <div class="progress-bar"><div class="fill low" style="width: 0%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script>ewGuard("instructor");</script>
+</body>
+</html>

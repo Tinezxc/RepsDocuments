@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EarlyWatch - Student Records</title>
+  <link rel="stylesheet" href="assets/instructor-records.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon"><i data-lucide="layers"></i></div>
+      <div>
+        <div class="brand-name">EarlyWatch</div>
+        <div class="brand-sub">Instructor</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="instructor-dashboard.html" class="nav-item">
+        <i data-lucide="layout-grid"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="instructor-student-records.html" class="nav-item active">
+        <i data-lucide="users"></i>
+        <span>Student Records</span>
+      </a>
+      <a href="instructor-interventions.html" class="nav-item">
+        <i data-lucide="clipboard-list"></i>
+        <span>Interventions</span>
+      </a>
+      <a href="instructor-alerts.html" class="nav-item">
+        <i data-lucide="bell"></i>
+        <span>Alerts</span>
+        <span class="badge red">7</span>
+      </a>
+    </nav>
+
+    <div class="user-profile">
+      <div class="avatar" data-user-initials>PJ</div>
+      <div class="user-info">
+        <div class="user-name" data-user-name>Prof. Jovic pogi</div>
+        <div class="user-role" data-user-role>Instructor</div>
+      </div>
+      <a href="index.html" class="nav-item">
+    <i data-lucide="log-out" class="logout-icon"></i>
+    <span>Logout</span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <header class="header">
+      <h1>Student Records</h1>
+      <p class="subtitle">6 students enrolled · Click a row to view full profile</p>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-box">
+        <i data-lucide="search"></i>
+        <input type="text" placeholder="Search by name, ID, or course...">
+      </div>
+
+      <div class="filter-group">
+        <button class="filter-btn active">All</button>
+        <button class="filter-btn">Critical</button>
+        <button class="filter-btn">High</button>
+        <button class="filter-btn">Medium</button>
+        <button class="filter-btn">Low</button>
+      </div>
+
+      <div class="sort-dropdown">
+        <select>
+          <option>Sort: Risk Score</option>
+          <option>Sort: GPA</option>
+          <option>Sort: Attendance</option>
+          <option>Sort: Name</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <section class="table-card">
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Course · Section</th>
+              <th>Risk Level</th>
+              <th>GPA</th>
+              <th>Attendance</th>
+              <th>Missed</th>
+              <th>Case Status</th>
+              <th>Adviser</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- Row 1 -->
+            <tr class="clickable-row">
+              <td>
+                <div class="student-cell">
+                  <div class="avatar-initials bg-critical">LB</div>
+                  <div>
+                    <div class="student-name">Liam Bautista</div>
+                    <div class="student-id">2021-09234</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>Computer Engineering</div>
+                <div class="text-muted">CpE3-A</div>
+              </td>
+              <td>
+                <div class="risk-cell">
+                  <span class="tag tag-critical">Critical</span>
+                  <span class="risk-score">97</span>
+                </div>
+              </td>
+              <td class="text-danger font-bold">1.50</td>
+              <td>
+                <div class="attendance-cell">
+                  <div class="bar-container"><div class="bar-fill critical" style="width: 49%;"></div></div>
+                  <span class="attendance-val">49%</span>
+                </div>
+              </td>
+              <td class="text-danger font-bold">12</td>
+              <td>
+                <div class="status-cell text-danger font-bold">
+                  Open <span class="alert-exclamation">!</span>
+                </div>
+              </td>
+              <td class="text-muted">Gomez</td>
+            </tr>
+
+            <!-- Row 2 -->
+            <tr class="clickable-row">
+              <td>
+                <div class="student-cell">
+                  <div class="avatar-initials bg-critical">MD</div>
+                  <div>
+                    <div class="student-name">Marco Dela Cruz</div>
+                    <div class="student-id">2021-10432</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>Computer Science</div>
+                <div class="text-muted">CS3-A</div>
+              </td>
+              <td>
+                <div class="risk-cell">
+                  <span class="tag tag-critical">Critical</span>
+                  <span class="risk-score">91</span>
+                </div>
+              </td>
+              <td class="text-danger font-bold">1.75</td>
+              <td>
+                <div class="attendance-cell">
+                  <div class="bar-container"><div class="bar-fill critical" style="width: 58%;"></div></div>
+                  <span class="attendance-val">58%</span>
+                </div>
+              </td>
+              <td class="text-danger font-bold">8</td>
+              <td>
+                <div class="status-cell text-danger font-bold">
+                  Open <span class="alert-exclamation">!</span>
+                </div>
+              </td>
+              <td class="text-muted">Santos</td>
+            </tr>
+
+            <!-- Row 3 -->
+            <tr class="clickable-row">
+              <td>
+                <div class="student-cell">
+                  <div class="avatar-initials bg-high">RC</div>
+                  <div>
+                    <div class="student-name">Rina Castillo</div>
+                    <div class="student-id">2021-11089</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>Computer Science</div>
+                <div class="text-muted">CS3-B</div>
+              </td>
+              <td>
+                <div class="risk-cell">
+                  <span class="tag tag-high">High</span>
+                  <span class="risk-score">79</span>
+                </div>
+              </td>
+              <td class="text-warning font-bold">1.90</td>
+              <td>
+                <div class="attendance-cell">
+                  <div class="bar-container"><div class="bar-fill high" style="width: 67%;"></div></div>
+                  <span class="attendance-val">67%</span>
+                </div>
+              </td>
+              <td class="text-warning font-bold">6</td>
+              <td>
+                <div class="status-cell text-warning font-bold">
+                  In-Progress <span class="alert-exclamation">!</span>
+                </div>
+              </td>
+              <td class="text-muted">Gomez</td>
+            </tr>
+
+            <!-- Row 4 -->
+            <tr class="clickable-row">
+              <td>
+                <div class="student-cell">
+                  <div class="avatar-initials bg-high">SN</div>
+                  <div>
+                    <div class="student-name">Sophia Navarro</div>
+                    <div class="student-id">2022-08871</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>Information Technology</div>
+                <div class="text-muted">IT2-B</div>
+              </td>
+              <td>
+                <div class="risk-cell">
+                  <span class="tag tag-high">High</span>
+                  <span class="risk-score">74</span>
+                </div>
+              </td>
+              <td class="text-warning font-bold">2.10</td>
+              <td>
+                <div class="attendance-cell">
+                  <div class="bar-container"><div class="bar-fill high" style="width: 72%;"></div></div>
+                  <span class="attendance-val">72%</span>
+                </div>
+              </td>
+              <td class="text-warning font-bold">5</td>
+              <td>
+                <div class="status-cell text-warning font-bold">
+                  In-Progress <span class="alert-exclamation">!</span>
+                </div>
+              </td>
+              <td class="text-muted">Santos</td>
+            </tr>
+
+            <!-- Row 5 -->
+            <tr class="clickable-row">
+              <td>
+                <div class="student-cell">
+                  <div class="avatar-initials bg-medium">IR</div>
+                  <div>
+                    <div class="student-name">Isabella Reyes</div>
+                    <div class="student-id">2023-04512</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>Computer Science</div>
+                <div class="text-muted">CS1-C</div>
+              </td>
+              <td>
+                <div class="risk-cell">
+                  <span class="tag tag-medium">Medium</span>
+                  <span class="risk-score">48</span>
+                </div>
+              </td>
+              <td class="font-bold">2.50</td>
+              <td>
+                <div class="attendance-cell">
+                  <div class="bar-container"><div class="bar-fill low" style="width: 81%;"></div></div>
+                  <span class="attendance-val">81%</span>
+                </div>
+              </td>
+              <td>3</td>
+              <td class="text-info font-bold">Monitoring</td>
+              <td class="text-muted">Santos</td>
+            </tr>
+
+            <!-- Row 6 -->
+            <tr class="clickable-row">
+              <td>
+                <div class="student-cell">
+                  <div class="avatar-initials bg-low">EM</div>
+                  <div>
+                    <div class="student-name">Ethan Mendoza</div>
+                    <div class="student-id">2022-07123</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>Information Technology</div>
+                <div class="text-muted">IT2-A</div>
+              </td>
+              <td>
+                <div class="risk-cell">
+                  <span class="tag tag-low">Low</span>
+                  <span class="risk-score">12</span>
+                </div>
+              </td>
+              <td class="font-bold">3.10</td>
+              <td>
+                <div class="attendance-cell">
+                  <div class="bar-container"><div class="bar-fill low" style="width: 91%;"></div></div>
+                  <span class="attendance-val">91%</span>
+                </div>
+              </td>
+              <td>0</td>
+              <td class="text-success font-bold">Resolved</td>
+              <td class="text-muted">Gomez</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="table-footer">
+      Showing 6 of 6 students
+    </div>
+
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script>ewGuard("instructor");</script>
+</body>
+</html>

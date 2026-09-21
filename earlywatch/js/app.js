@@ -86,8 +86,6 @@ function ewConfirm({ title, body, confirmLabel = "Confirm", cancelLabel = "Cance
 
 /* ============================================================
    ADD STUDENT — public entry point
-   Called directly by the button's inline onclick, so it works
-   even if the document-level delegation never ran.
    ============================================================ */
 async function ewOpenAddStudent(event) {
   if (event) {
@@ -156,7 +154,7 @@ async function ewApiAddStudent(payload) {
 }
 
 /* ============================================================
-   STUDENT FORM — name / ID / course / section / adviser only
+   DEFAULTS
    ============================================================ */
 const EW_NEW_STUDENT_DEFAULTS = {
   gpa:            2.00,
@@ -183,41 +181,64 @@ function ewNextStudentId() {
   return candidate;
 }
 
-function ewStudentFormModal(existing) {
-  const isEdit = !!existing;
-  const v = existing || {};
-
-  const defaults = isEdit
-    ? { id: v.id, name: v.name, course: v.course, section: v.section, adviser: v.adviser }
-    : { id: ewNextStudentId() };
-
-  const field = (name, label, type = "text", extra = "") => `
+/* ============================================================
+   FORM BUILDER HELPERS
+   ============================================================ */
+function ewField(name, label, type = "text", value = "", extra = "") {
+  return `
     <label class="ew-field">
       <span>${ewEsc(label)}</span>
       <input type="${type}" name="${name}"
-             value="${defaults[name] != null ? ewEsc(defaults[name]) : ""}" ${extra}>
+             value="${value != null ? ewEsc(value) : ""}" ${extra}>
     </label>`;
+}
+
+function ewSelectField(name, label, options, selected) {
+  const opts = options.map(o =>
+    `<option value="${ewEsc(o)}" ${selected === o ? "selected" : ""}>${ewEsc(o)}</option>`
+  ).join("");
+  return `
+    <label class="ew-field">
+      <span>${ewEsc(label)}</span>
+      <select name="${name}">${opts}</select>
+    </label>`;
+}
+
+/* ============================================================
+   STUDENT FORM MODAL — dispatches to Add or Edit
+   ============================================================ */
+function ewStudentFormModal(existing) {
+  return existing ? ewEditStudentModal(existing) : ewAddStudentModal();
+}
+window.ewStudentFormModal = ewStudentFormModal;
+
+/* ------------------------------------------------------------
+   ADD STUDENT — Full name, Course, Section, Adviser, Case Status
+   ------------------------------------------------------------ */
+function ewAddStudentModal() {
+  const suggestedId = ewNextStudentId();
+  const d = EW_NEW_STUDENT_DEFAULTS;
 
   const bodyHTML = `
     <form id="ewStudentForm" novalidate>
       <div class="ew-form-error" hidden></div>
       <div class="ew-form-grid">
-        ${field("name",    "Full name",  "text", "required")}
-        ${field("id",      "Student ID", "text", `required ${isEdit ? "readonly" : ""}`)}
-        ${field("course",  "Course",     "text")}
-        ${field("section", "Section",    "text")}
-        ${field("adviser", "Adviser",    "text")}
+        ${ewField("name",    "Full name",    "text", "", "required")}
+        ${ewField("id",      "Student ID",   "text", suggestedId, "required readonly")}
+        ${ewField("course",  "Course",       "text")}
+        ${ewField("section", "Section",      "text")}
+        ${ewField("adviser", "Adviser",      "text")}
+        ${ewSelectField("caseStatus", "Case Status",
+              ["Open", "In-Progress", "Monitoring", "Resolved"], d.caseStatus)}
       </div>
     </form>`;
 
   const footerHTML = `
     <button type="button" class="ew-btn ew-btn-ghost" data-role="cancel">Cancel</button>
-    <button type="button" class="ew-btn ew-btn-primary" data-role="save">
-      ${isEdit ? "Save changes" : "Add student"}
-    </button>`;
+    <button type="button" class="ew-btn ew-btn-primary" data-role="save">Add student</button>`;
 
   const { overlay, close, closed } = ewShowModal({
-    title: isEdit ? `Edit ${existing.name}` : "Add Student",
+    title: "Add Student",
     bodyHTML, footerHTML, width: 560
   });
 
@@ -240,28 +261,26 @@ function ewStudentFormModal(existing) {
     errBox.hidden = true;
     saveBtn.disabled = true;
     const original = saveBtn.textContent;
-    saveBtn.textContent = isEdit ? "Saving…" : "Adding…";
+    saveBtn.textContent = "Adding…";
 
     const payload = {
-      name:    data.name.trim(),
-      id:      data.id.trim(),
-      course:  data.course  || "",
-      section: data.section || "",
-      adviser: data.adviser || ""
+      name:           data.name.trim(),
+      id:             data.id.trim(),
+      course:         data.course  || "",
+      section:        data.section || "",
+      adviser:        data.adviser || "",
+      caseStatus:     data.caseStatus || d.caseStatus,
+      gpa:            d.gpa,
+      attendance:     d.attendance,
+      missed:         d.missed,
+      failedSubjects: d.failedSubjects
     };
-    if (!isEdit) Object.assign(payload, EW_NEW_STUDENT_DEFAULTS);
 
     let result;
     try {
-      if (isEdit) {
-        result = (typeof EW_DB !== "undefined" && typeof EW_DB.updateStudent === "function")
-          ? await EW_DB.updateStudent(existing.id, payload)
-          : { ok: false, errors: ["Update is not supported by the current build."] };
-      } else {
-        result = await ewApiAddStudent(payload);
-      }
+      result = await ewApiAddStudent(payload);
     } catch (err) {
-      console.error("[EarlyWatch] Save failed:", err);
+      console.error("[EarlyWatch] Add failed:", err);
       result = { ok: false, errors: ["Could not reach the server. Is Apache/PHP/MySQL running?"] };
     }
 
@@ -276,7 +295,6 @@ function ewStudentFormModal(existing) {
     const created = result.student || null;
     close(created);
 
-    // If we bypassed EW_DB, the local cache is stale — reload to show the new row.
     if (result.fallback) {
       setTimeout(() => window.location.reload(), 250);
     }
@@ -285,13 +303,157 @@ function ewStudentFormModal(existing) {
   saveBtn.onclick = save;
   form.addEventListener("submit", e => { e.preventDefault(); save(); });
 
-  // Focus the first editable field for a nicer UX
-  const firstInput = overlay.querySelector("input:not([readonly])");
+  const firstInput = overlay.querySelector('input[name="name"]');
   if (firstInput) setTimeout(() => firstInput.focus(), 30);
 
   return closed;
 }
-window.ewStudentFormModal = ewStudentFormModal;
+
+/* ------------------------------------------------------------
+   EDIT STUDENT — Risk Level, GPA, Attendance, Missed, Case Status
+   ------------------------------------------------------------ */
+function ewEditStudentModal(existing) {
+  const v = existing;
+
+  // Determine current risk level from the risk engine
+  const currentRiskLevel = (typeof EW_RISK !== "undefined")
+    ? EW_RISK.compute(v).level
+    : "low";
+
+  const riskLevels = ["critical", "high", "medium", "low"];
+  const riskLabels = { critical: "Critical", high: "High", medium: "Medium", low: "Low" };
+
+  const bodyHTML = `
+    <form id="ewStudentForm" novalidate>
+      <div class="ew-form-error" hidden></div>
+      <div class="ew-form-grid">
+        ${ewSelectField(
+            "riskLevel",
+            "Risk Level",
+            riskLevels.map(l => riskLabels[l]),
+            riskLabels[currentRiskLevel]
+        )}
+        ${ewField("gpa",        "GPA",              "number", v.gpa,        'step="0.01" min="0" max="4"')}
+        ${ewField("attendance", "Attendance (%)",   "number", v.attendance, 'min="0" max="100"')}
+        ${ewField("missed",     "Missed Activities","number", v.missed,     'min="0"')}
+        ${ewSelectField("caseStatus", "Case Status",
+              ["Open", "In-Progress", "Monitoring", "Resolved"], v.caseStatus)}
+      </div>
+    </form>`;
+
+  const footerHTML = `
+    <button type="button" class="ew-btn ew-btn-ghost" data-role="cancel">Cancel</button>
+    <button type="button" class="ew-btn ew-btn-primary" data-role="save">Save changes</button>`;
+
+  const { overlay, close, closed } = ewShowModal({
+    title: `Edit ${v.name}`,
+    bodyHTML, footerHTML, width: 520
+  });
+
+  const form    = overlay.querySelector("#ewStudentForm");
+  const errBox  = overlay.querySelector(".ew-form-error");
+  const saveBtn = overlay.querySelector('[data-role="save"]');
+
+  const gpaInput   = form.elements["gpa"];
+  const attInput   = form.elements["attendance"];
+  const missInput  = form.elements["missed"];
+  const riskSelect = form.elements["riskLevel"];
+
+  /* When the user picks a risk level, auto-fill the numeric fields
+     with typical values for that level. They can still override. */
+  const RISK_PRESETS = {
+    critical: { gpa: 1.60, attendance: 55, missed: 10 },
+    high:     { gpa: 2.00, attendance: 68, missed: 6  },
+    medium:   { gpa: 2.40, attendance: 80, missed: 3  },
+    low:      { gpa: 3.00, attendance: 95, missed: 0  }
+  };
+
+  riskSelect.addEventListener("change", () => {
+    const key = riskSelect.value.toLowerCase();
+    const preset = RISK_PRESETS[key];
+    if (!preset) return;
+    gpaInput.value  = preset.gpa.toFixed(2);
+    attInput.value  = preset.attendance;
+    missInput.value = preset.missed;
+  });
+
+  overlay.querySelector('[data-role="cancel"]').onclick = () => close(null);
+
+  const showError = msg => { errBox.textContent = msg; errBox.hidden = false; };
+
+  async function save() {
+    const gpa        = parseFloat(gpaInput.value);
+    const attendance = parseInt(attInput.value, 10);
+    const missed     = parseInt(missInput.value, 10);
+    const riskLevel  = riskSelect.value.toLowerCase();
+    const caseStatus = form.elements["caseStatus"].value;
+
+    const errs = [];
+    if (isNaN(gpa) || gpa < 0 || gpa > 4)
+      errs.push("GPA must be between 0 and 4.");
+    if (isNaN(attendance) || attendance < 0 || attendance > 100)
+      errs.push("Attendance must be between 0 and 100.");
+    if (isNaN(missed) || missed < 0)
+      errs.push("Missed activities must be a non-negative number.");
+    if (errs.length) { showError(errs.join(" ")); return; }
+
+    errBox.hidden = true;
+    saveBtn.disabled = true;
+    const original = saveBtn.textContent;
+    saveBtn.textContent = "Saving…";
+
+    /* Payload only contains the fields that the Edit form manages.
+       Name, ID, Course, Section, Adviser are left untouched. */
+    const payload = {
+      gpa:        gpa,
+      attendance: attendance,
+      missed:     missed,
+      caseStatus: caseStatus,
+      // riskLevel is informational; the risk engine recomputes the score
+      // from gpa/attendance/missed/failedSubjects on save.
+      riskLevel:  riskLevel
+    };
+
+    let result;
+    try {
+      if (typeof EW_DB !== "undefined" && typeof EW_DB.updateStudent === "function") {
+        result = await EW_DB.updateStudent(v.id, payload);
+      } else {
+        const res = await fetch(`api/student.php?id=${encodeURIComponent(v.id)}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const body = await res.json().catch(() => null);
+        if (!res.ok) {
+          result = { ok: false, errors: (body && body.errors) || [`HTTP ${res.status}`] };
+        } else {
+          result = { ok: true, student: body };
+        }
+      }
+    } catch (err) {
+      console.error("[EarlyWatch] Edit failed:", err);
+      result = { ok: false, errors: ["Could not reach the server. Is Apache/PHP/MySQL running?"] };
+    }
+
+    if (!result || !result.ok) {
+      const list = (result && result.errors) ? result.errors : ["Save failed."];
+      showError(list.join(" "));
+      saveBtn.disabled = false;
+      saveBtn.textContent = original;
+      return;
+    }
+
+    close(result.student || null);
+  }
+
+  saveBtn.onclick = save;
+  form.addEventListener("submit", e => { e.preventDefault(); save(); });
+
+  setTimeout(() => { gpaInput.focus(); gpaInput.select(); }, 30);
+
+  return closed;
+}
 
 /* ============================================================
    RECORDS TABLE RENDERER
@@ -454,8 +616,6 @@ function ewInitRecordsPage() {
 
 /* ============================================================
    GLOBAL "ADD STUDENT" HANDLER — document-level delegation
-   Kept for any button on other pages that only uses
-   data-action="add-student" (no inline onclick).
    ============================================================ */
 (function wireAddStudentButton() {
   if (window.__ewAddStudentWired) return;
@@ -465,7 +625,6 @@ function ewInitRecordsPage() {
     const btn = e.target.closest("[data-action='add-student']");
     if (!btn) return;
 
-    // If the button has its own inline onclick, let that handle it.
     if (btn.hasAttribute("onclick")) return;
 
     ewOpenAddStudent(e);

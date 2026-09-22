@@ -1,0 +1,279 @@
+/* Reset and Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  display: flex;
+  height: 100vh;
+  color: #ffffff;
+  background-color: #0f1115;
+}
+
+/* Layout Containers */
+.left-panel {
+  background-color: #1a1d24;
+  width: 40%;
+  min-width: 400px;
+  padding: 3rem 4rem;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #2a2d35;
+}
+
+.right-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* Left Panel Content */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: auto;
+}
+
+.logo-icon {
+  background-color: #5570f6;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: #ffffff;
+}
+
+.hero-content {
+  margin-bottom: auto;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+.hero-content .highlight {
+  color: #5570f6;
+  font-weight: 700;
+}
+
+.hero-content p {
+  color: #9ba1a6;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 90%;
+}
+
+/* Demo Account Chips */
+.demo-accounts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #2a2d35;
+}
+
+.demo-title {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 0.35rem;
+}
+
+.demo-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  background-color: #22252e;
+  border: 1px solid #323642;
+  border-radius: 6px;
+  color: #cbd2d9;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.demo-chip:hover {
+  background-color: #2b2f3a;
+  border-color: #5570f6;
+}
+
+.demo-role {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.demo-role.adviser    { background: rgba(85, 112, 246, 0.18); color: #8ea2ff; }
+.demo-role.instructor { background: rgba(244, 162, 97, 0.18); color: #f4a261; }
+.demo-role.student    { background: rgba(42, 157, 143, 0.18); color: #4fd1bd; }
+
+.demo-mail {
+  font-size: 0.75rem;
+  color: #808a9d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Right Panel Content (Login Form) */
+.login-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-container h2 {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #9ba1a6;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+}
+
+/* Error Banner */
+.login-error {
+  background-color: rgba(230, 57, 70, 0.12);
+  border: 1px solid rgba(230, 57, 70, 0.35);
+  color: #ff8a8a;
+  padding: 0.7rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.83rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.4;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  color: #9ba1a6;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background-color: #22252e;
+  border: 1px solid #323642;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  border-color: #5570f6;
+}
+
+.form-group input::placeholder {
+  color: #6b7280;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 0.85rem;
+  background-color: #5570f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: #445ce4;
+}
+
+.btn-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.login-hint {
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+.login-hint code {
+  background: #22252e;
+  border: 1px solid #323642;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  color: #9ba1a6;
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+  body {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .left-panel {
+    width: 100%;
+    min-width: auto;
+    height: auto;
+    padding: 2rem;
+  }
+
+  .logo-container {
+    margin-bottom: 2rem;
+  }
+
+  .hero-content {
+    margin-bottom: 2rem;
+  }
+
+  .hero-content h1 {
+    font-size: 2.25rem;
+  }
+
+  .demo-accounts {
+    margin-bottom: 2rem;
+  }
+
+  .right-panel {
+    padding: 2rem;
+  }
+}

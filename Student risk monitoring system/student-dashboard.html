@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EarlyWatch - My Academic Status</title>
+  <link rel="stylesheet" href="assets/student.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon"><i data-lucide="layers"></i></div>
+      <div>
+        <div class="brand-name">EarlyWatch</div>
+        <div class="brand-sub">Student</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="student-dashboard.html" class="nav-item active">
+        <i data-lucide="bar-chart-3"></i>
+        <span>My Performance</span>
+      </a>
+    </nav>
+
+    <div class="user-profile">
+      <div class="avatar" data-user-initials>AR</div>
+      <div class="user-info">
+        <div class="user-name" data-user-name>Clark Kent pogi</div>
+        <div class="user-role" data-user-role>Student</div>
+      </div>
+      <a href="index.html" class="nav-item">
+    <i data-lucide="log-out" class="logout-icon"></i>
+    <span>Logout</span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <header class="header">
+      <h1>My Academic Status</h1>
+      <p class="subtitle">BS Computer Science · CS1-C · Academic Year 2026–2027, 1st Semester</p>
+    </header>
+
+    <!-- Risk Banner -->
+    <div class="risk-banner">
+      <i data-lucide="triangle-alert" class="risk-icon"></i>
+      <div class="risk-content">
+        <div class="risk-title">You are currently flagged as medium academic risk</div>
+        <div class="risk-sub">Your adviser has been notified. A study plan has been created for you. Please attend your scheduled check-ins.</div>
+      </div>
+    </div>
+
+    <!-- Summary Metrics -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value">2.50</div>
+        <div class="metric-label">GPA</div>
+        <div class="metric-sub">Current term</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">81%</div>
+        <div class="metric-label">Attendance</div>
+        <div class="metric-sub">Across all subjects</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value text-success">3/3</div>
+        <div class="metric-label">Subjects Passing</div>
+        <div class="metric-sub">0 at risk</div>
+      </div>
+    </section>
+
+    <!-- Section Title -->
+    <div class="section-title">Subject Breakdown</div>
+
+    <!-- Subject Cards -->
+    <div class="subjects-list">
+
+      <!-- Subject 1 -->
+      <div class="subject-card">
+        <div class="subject-top">
+          <div class="subject-left">
+            <div class="subject-code-row">
+              <span class="subject-code">CCPROG1</span>
+              <span class="status-tag status-passing">Passing</span>
+            </div>
+            <div class="subject-name">Programming 1</div>
+            <div class="subject-instructor">Prof. James Cruz</div>
+          </div>
+          <div class="subject-grade text-success">76</div>
+        </div>
+
+        <div class="subject-stats">
+          <div class="stat-tile">
+            <div class="stat-value">69</div>
+            <div class="stat-label">Prelim</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-value">74</div>
+            <div class="stat-label">Midterm</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-value">82%</div>
+            <div class="stat-label">Attendance</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject 2 -->
+      <div class="subject-card">
+        <div class="subject-top">
+          <div class="subject-left">
+            <div class="subject-code-row">
+              <span class="subject-code">MATH111</span>
+              <span class="status-tag status-passing">Passing</span>
+            </div>
+            <div class="subject-name">Algebra &amp; Trigonometry</div>
+            <div class="subject-instructor">Prof. Ana Reyes</div>
+          </div>
+          <div class="subject-grade text-success">79</div>
+        </div>
+
+        <div class="subject-stats">
+          <div class="stat-tile">
+            <div class="stat-value">81</div>
+            <div class="stat-label">Prelim</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-value">77</div>
+            <div class="stat-label">Midterm</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-value">84%</div>
+            <div class="stat-label">Attendance</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject 3 -->
+      <div class="subject-card">
+        <div class="subject-top">
+          <div class="subject-left">
+            <div class="subject-code-row">
+              <span class="subject-code">GNED01</span>
+              <span class="status-tag status-passing">Passing</span>
+            </div>
+            <div class="subject-name">Understanding the Self</div>
+            <div class="subject-instructor">Prof. Rey Santos</div>
+          </div>
+          <div class="subject-grade text-success">85</div>
+        </div>
+
+        <div class="subject-stats">
+          <div class="stat-tile">
+            <div class="stat-value">87</div>
+            <div class="stat-label">Prelim</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-value">83</div>
+            <div class="stat-label">Midterm</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-value">79%</div>
+            <div class="stat-label">Attendance</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script>ewGuard("student");</script>
+</body>
+</html>

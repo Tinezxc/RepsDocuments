@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EarlyWatch - Interventions</title>
+  <link rel="stylesheet" href="assets/instructor-interventions.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon"><i data-lucide="layers"></i></div>
+      <div>
+        <div class="brand-name">EarlyWatch</div>
+        <div class="brand-sub">Instructor</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="instructor-dashboard.html" class="nav-item">
+        <i data-lucide="layout-grid"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="instructor-student-records.html" class="nav-item">
+        <i data-lucide="users"></i>
+        <span>Student Records</span>
+      </a>
+      <a href="instructor-interventions.html" class="nav-item active">
+        <i data-lucide="clipboard-list"></i>
+        <span>Interventions</span>
+      </a>
+      <a href="instructor-alerts.html" class="nav-item">
+        <i data-lucide="bell"></i>
+        <span>Alerts</span>
+        <span class="badge red">7</span>
+      </a>
+    </nav>
+
+    <div class="user-profile">
+      <div class="avatar" data-user-initials>PJ</div>
+      <div class="user-info">
+        <div class="user-name" data-user-name>Prof. Jovic pogi</div>
+        <div class="user-role" data-user-role>Instructor</div>
+      </div>
+      <a href="index.html" class="nav-item">
+    <i data-lucide="log-out" class="logout-icon"></i>
+    <span>Logout</span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <header class="header">
+      <h1>Interventions</h1>
+      <p class="subtitle">Track all academic support activities and their outcomes.</p>
+    </header>
+
+    <!-- Summary Metrics -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value text-warning">5</div>
+        <div class="metric-label">Pending Outcome</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value text-success">2</div>
+        <div class="metric-label">Effective</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value text-danger">0</div>
+        <div class="metric-label">No Response</div>
+      </div>
+    </section>
+
+    <!-- Alert Banner -->
+    <div class="alert-banner">
+      <i data-lucide="triangle-alert"></i>
+      <div>
+        <span><strong>1 at-risk student with no interventions</strong></span>
+        <div class="banner-sub"><span class="highlight">Liam Bautista</span> · critical</div>
+      </div>
+    </div>
+
+    <!-- Section Title -->
+    <div class="section-title">All Interventions (7)</div>
+
+    <!-- Interventions List (single column) -->
+    <div class="interventions-list">
+
+      <!-- Item 1 -->
+      <div class="intervention-card">
+        <div class="card-header">
+          <div class="student-info">
+            <span class="student-name">Isabella Reyes</span>
+            <span class="tag tag-medium">medium</span>
+            <div class="student-id">2023-04512 · CS1-C</div>
+          </div>
+          <div class="card-badges">
+            <span class="type-badge">Academic Plan</span>
+            <span class="status-badge status-pending">Pending</span>
+          </div>
+        </div>
+        <p class="intervention-desc">Set up weekly check-ins. Study plan created for remaining term.</p>
+        <div class="card-footer">2026-09-10 · By: Dr. Maria Santos</div>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="intervention-card">
+        <div class="card-header">
+          <div class="student-info">
+            <span class="student-name">Sophia Navarro</span>
+            <span class="tag tag-high">high</span>
+            <div class="student-id">2022-08871 · IT2-B</div>
+          </div>
+          <div class="card-badges">
+            <span class="type-badge">Tutoring</span>
+            <span class="status-badge status-pending">Pending</span>
+          </div>
+        </div>
+        <p class="intervention-desc">Enrolled in peer tutoring program for web development.</p>
+        <div class="card-footer">2026-09-08 · By: Prof. James Cruz</div>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="intervention-card">
+        <div class="card-header">
+          <div class="student-info">
+            <span class="student-name">Rina Castillo</span>
+            <span class="tag tag-high">high</span>
+            <div class="student-id">2021-11089 · CS3-B</div>
+          </div>
+          <div class="card-badges">
+            <span class="type-badge">Parent Contact</span>
+            <span class="status-badge status-pending">Pending</span>
+          </div>
+        </div>
+        <p class="intervention-desc">Parents notified of academic standing. Follow-up scheduled.</p>
+        <div class="card-footer">2026-09-06 · By: Prof. Ricardo Gomez</div>
+      </div>
+
+      <!-- Item 4 -->
+      <div class="intervention-card">
+        <div class="card-header">
+          <div class="student-info">
+            <span class="student-name">Marco Dela Cruz</span>
+            <span class="tag tag-critical">critical</span>
+            <div class="student-id">2021-10432 · CS3-A</div>
+          </div>
+          <div class="card-badges">
+            <span class="type-badge">Counseling</span>
+            <span class="status-badge status-pending">Pending</span>
+          </div>
+        </div>
+        <p class="intervention-desc">Student reports work schedule conflict. Advised to coordinate with instructors.</p>
+        <div class="card-footer">2026-09-05 · By: Dr. Maria Santos</div>
+      </div>
+
+      <!-- Item 5 -->
+      <div class="intervention-card">
+        <div class="card-header">
+          <div class="student-info">
+            <span class="student-name">Sophia Navarro</span>
+            <span class="tag tag-high">high</span>
+            <div class="student-id">2022-08871 · IT2-B</div>
+          </div>
+          <div class="card-badges">
+            <span class="type-badge">Counseling</span>
+            <span class="status-badge status-effective">Effective</span>
+          </div>
+        </div>
+        <p class="intervention-desc">Initial assessment session. Student reports difficulty managing coursework alongside personal matters.</p>
+        <div class="card-footer">2026-09-03 · By: Dr. Maria Santos</div>
+      </div>
+
+      <!-- Item 6 -->
+      <div class="intervention-card">
+        <div class="card-header">
+          <div class="student-info">
+            <span class="student-name">Rina Castillo</span>
+            <span class="tag tag-high">high</span>
+            <div class="student-id">2021-11089 · CS3-B</div>
+          </div>
+          <div class="card-badges">
+            <span class="type-badge">Tutoring</span>
+            <span class="status-badge status-pending">Pending</span>
+          </div>
+        </div>
+        <p class="intervention-desc">Referred to academic support center for CCPROG3 tutoring.</p>
+        <div class="card-footer">2026-08-30 · By: Prof. James Cruz</div>
+      </div>
+
+      <!-- Item 7 -->
+      <div class="intervention-card">
+        <div class="card-header">
+          <div class="student-info">
+            <span class="student-name">Ethan Mendoza</span>
+            <span class="tag tag-low">low</span>
+            <div class="student-id">2022-07123 · IT2-A</div>
+          </div>
+          <div class="card-badges">
+            <span class="type-badge">Counseling</span>
+            <span class="status-badge status-effective">Effective</span>
+          </div>
+        </div>
+        <p class="intervention-desc">Routine check-in. Student performing well. Case resolved.</p>
+        <div class="card-footer">2026-08-28 · By: Prof. Ricardo Gomez</div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script>ewGuard("instructor");</script>
+</body>
+</html>

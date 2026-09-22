@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EarlyWatch Sign In</title>
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <!-- Left Panel -->
+    <div class="left-panel">
+      <div class="logo-container">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 2L2 7l10 5 10-5-10-5zM2 12l10 5 10-5M2 17l10 5 10-5"
+              stroke="#ffffff"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            />
+          </svg>
+        </div>
+        EarlyWatch
+      </div>
+
+      <div class="hero-content">
+        <h1>
+          Student Risk<br />
+          <span class="highlight">Early Intervention</span><br />
+          System
+        </h1>
+        <p>
+          Monitor academic risk signals early and act before students fall
+          behind.
+        </p>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <div class="login-container">
+        <h2>Sign in</h2>
+        <p class="subtitle">Access your monitoring dashboard</p>
+
+        <div id="loginError" class="login-error" hidden></div>
+
+        <form id="loginForm" novalidate>
+          <div class="form-group">
+            <label for="email">Email address</label>
+            <input
+              type="email"
+              id="email"
+              placeholder="Email"
+              autocomplete="username"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              placeholder="Password"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn-submit" id="submitBtn">
+            Sign in
+          </button>
+        </form>
+
+        <p class="auth-switch">
+          Don't have an account?<a href="register.html">Create one</a>
+        </p>
+      </div>
+    </div>
+
+    <script src="js/db.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+      const form = document.getElementById("loginForm");
+      const emailInput = document.getElementById("email");
+      const passInput = document.getElementById("password");
+      const errorBox = document.getElementById("loginError");
+      const submitBtn = document.getElementById("submitBtn");
+
+      function showError(msg) {
+        errorBox.textContent = msg;
+        errorBox.hidden = false;
+      }
+      function clearError() {
+        errorBox.hidden = true;
+        errorBox.textContent = "";
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        clearError();
+
+        const email = emailInput.value.trim();
+        const password = passInput.value;
+
+        if (!email || !password) {
+          showError("Please enter both your email and password.");
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Signing in…";
+
+        setTimeout(async () => {
+          const account = await ewLogin(email, password);
+
+          if (account) {
+            window.location.href = account.redirect;
+          } else {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Sign in";
+            showError("Invalid email or password. Please try again.");
+            passInput.value = "";
+            passInput.focus();
+          }
+        }, 350);
+      });
+    </script>
+  </body>
+</html>

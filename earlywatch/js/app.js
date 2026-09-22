@@ -900,3 +900,388 @@ function ewInitStudentDashboard() {
   EW_DB.subscribe(render);
   render();
 }
+
+/* ============================================================
+   STUDENT SELF-VIEW DASHBOARD  (fixed)
+   ============================================================ */
+function ewInitStudentDashboard() {
+  const root = document.querySelector("#studentRoot");
+  if (!root) return;
+
+  function render() {
+    const user = ewCurrentUser();
+    if (!user || !user.studentId) {
+      root.innerHTML = `<p class="text-muted" style="padding:2rem;">
+        No student record linked to this account.</p>`;
+      return;
+    }
+
+    const s = EW_DB.students.get(user.studentId);
+    if (!s) {
+      root.innerHTML = `<p class="text-muted" style="padding:2rem;">
+        Your student record could not be found.<br>
+        <span style="font-size:.8rem;">
+          Asked for student ID: <code>${ewEsc(user.studentId)}</code><br>
+          Loaded students: ${EW_DB.students.count()}
+        </span>
+      </p>`;
+      return;
+    }
+
+    const risk = EW_RISK.compute(s);
+
+    const bannerEl = document.querySelector("#riskBanner");
+    if (bannerEl) {
+      bannerEl.className = `risk-banner risk-banner-${risk.level}`;
+      bannerEl.querySelector(".risk-title").textContent =
+        `You are currently flagged as ${risk.label.toLowerCase()} academic risk`;
+      bannerEl.querySelector(".risk-sub").textContent =
+        risk.overrides.length
+          ? `Triggered by: ${risk.overrides.join(", ")}. Your adviser has been notified.`
+          : `Score: ${risk.score}/100. Your adviser has been notified.`;
+    }
+
+    const setText = (sel, v) => { const el = document.querySelector(sel); if (el) el.textContent = v; };
+    setText("[data-stu='gpa']",        Number(s.gpa).toFixed(2));
+    setText("[data-stu='attendance']", s.attendance + "%");
+    const passing = s.subjects.filter(x => (x.grade ?? 100) >= 75).length;
+    setText("[data-stu='passing']",     `${passing}/${s.subjects.length}`);
+    setText("[data-stu='passing-sub']", `${s.subjects.length - passing} at risk`);
+
+    const meta = document.querySelector("[data-user-meta]");
+    if (meta) {
+      meta.textContent = `${s.course || "—"} · ${s.section || "—"} · Academic Year 2026–2027, 1st Semester`;
+    }
+
+    const subjects = document.querySelector("#studentSubjects");
+    if (subjects) {
+      if (!s.subjects.length) {
+        subjects.innerHTML = `<p class="text-muted">No subject data recorded yet.</p>`;
+      } else {
+        subjects.innerHTML = s.subjects.map(sub => {
+          const fail = sub.grade < 75;
+          return `
+            <div class="subject-card">
+              <div class="subject-top">
+                <div class="subject-left">
+                  <div class="subject-code-row">
+                    <span class="subject-code">${ewEsc(sub.code)}</span>
+                    <span class="status-tag ${fail ? "status-failing" : "status-passing"}">
+                      ${fail ? "At Risk" : "Passing"}
+                    </span>
+                  </div>
+                  <div class="subject-name">${ewEsc(sub.name)}</div>
+                  <div class="subject-instructor">${ewEsc(sub.instructor || "—")}</div>
+                </div>
+                <div class="subject-grade ${fail ? "text-danger" : "text-success"}">
+                  ${sub.grade ?? "—"}
+                </div>
+              </div>
+              <div class="subject-stats">
+                <div class="stat-tile">
+                  <div class="stat-value">${sub.prelim ?? "—"}</div>
+                  <div class="stat-label">Prelim</div>
+                </div>
+                <div class="stat-tile">
+                  <div class="stat-value">${sub.midterm ?? "—"}</div>
+                  <div class="stat-label">Midterm</div>
+                </div>
+                <div class="stat-tile">
+                  <div class="stat-value">${sub.attendance ?? 0}%</div>
+                  <div class="stat-label">Attendance</div>
+                </div>
+              </div>
+            </div>`;
+        }).join("");
+      }
+    }
+  }
+
+  // Wait for the initial DB load, then render, then keep subscribed.
+  EW_DB.ready.then(() => {
+    render();
+    EW_DB.subscribe(render);
+  });
+}
+
+/* ============================================================
+   PASSWORD TOGGLE — reusable widget
+   ============================================================ */
+function ewPasswordField(name, label, value = "", opts = {}) {
+  const id = "pw_" + Math.random().toString(36).slice(2, 9);
+  const extra = opts.extra || "";
+  return `
+    <label class="ew-field">
+      <span>${ewEsc(label)}</span>
+      <div style="position:relative;">
+        <input type="password" id="${id}" name="${name}"
+               value="${ewEsc(value)}" minlength="8" maxlength="20"
+               autocomplete="new-password" ${extra}
+               style="width:100%; padding-right:38px;">
+        <button type="button" class="ew-pw-toggle" data-pw-toggle="${id}"
+                aria-label="Show password"
+                style="position:absolute; top:50%; right:6px; transform:translateY(-50%);
+                       background:transparent; border:none; color:#8b93a0;
+                       cursor:pointer; padding:4px; display:inline-flex;">
+          <i data-lucide="eye" style="width:16px;height:16px;"></i>
+        </button>
+      </div>
+    </label>`;
+}
+
+/* Delegate the toggle so dynamically-created fields work. */
+document.addEventListener("click", e => {
+  const btn = e.target.closest("[data-pw-toggle]");
+  if (!btn) return;
+  const input = document.getElementById(btn.dataset.pwToggle);
+  if (!input) return;
+  const showing = input.type === "text";
+  input.type = showing ? "password" : "text";
+  btn.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+  btn.innerHTML = `<i data-lucide="${showing ? "eye" : "eye-off"}" style="width:16px;height:16px;"></i>`;
+  if (window.lucide) lucide.createIcons();
+});
+
+/* ============================================================
+   ADD STUDENT — now includes password + ID sequence support
+   ============================================================ */
+function ewAddStudentModal() {
+  const suggestedId = ewNextStudentId();
+  const d = EW_NEW_STUDENT_DEFAULTS;
+
+  const bodyHTML = `
+    <form id="ewStudentForm" novalidate>
+      <div class="ew-form-error" hidden></div>
+      <div class="ew-form-grid">
+        ${ewField("name",    "Full name",    "text", "", "required")}
+        ${ewField("id",      "Student ID",   "text", suggestedId, "required")}
+        ${ewField("course",  "Course",       "text")}
+        ${ewField("section", "Section",      "text")}
+        ${ewField("adviser", "Adviser",      "text")}
+        ${ewSelectField("caseStatus", "Case Status",
+              ["Open", "In-Progress", "Monitoring", "Resolved"], d.caseStatus)}
+      </div>
+    </form>`;
+
+  const footerHTML = `
+    <button type="button" class="ew-btn ew-btn-ghost" data-role="cancel">Cancel</button>
+    <button type="button" class="ew-btn ew-btn-primary" data-role="save">Add student</button>`;
+
+  const { overlay, close, closed } = ewShowModal({
+    title: "Add Student",
+    bodyHTML, footerHTML, width: 560
+  });
+
+  const form    = overlay.querySelector("#ewStudentForm");
+  const errBox  = overlay.querySelector(".ew-form-error");
+  const saveBtn = overlay.querySelector('[data-role="save"]');
+
+  overlay.querySelector('[data-role="cancel"]').onclick = () => close(null);
+
+  const showError = msg => { errBox.textContent = msg; errBox.hidden = false; };
+
+  async function save() {
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    const errs = [];
+    if (!data.name || !data.name.trim()) errs.push("Name is required.");
+    if (!data.id   || !data.id.trim())   errs.push("Student ID is required.");
+    if (errs.length) { showError(errs.join(" ")); return; }
+
+    errBox.hidden = true;
+    saveBtn.disabled = true;
+    const original = saveBtn.textContent;
+    saveBtn.textContent = "Adding…";
+
+    const payload = {
+      name:           data.name.trim(),
+      id:             data.id.trim(),
+      course:         data.course  || "",
+      section:        data.section || "",
+      adviser:        data.adviser || "",
+      caseStatus:     data.caseStatus || d.caseStatus,
+      gpa:            d.gpa,
+      attendance:     d.attendance,
+      missed:         d.missed,
+      failedSubjects: d.failedSubjects
+    };
+
+    let result;
+    try {
+      result = await ewApiAddStudent(payload);
+    } catch (err) {
+      console.error("[EarlyWatch] Add failed:", err);
+      result = { ok: false, errors: ["Could not reach the server. Is Apache/PHP/MySQL running?"] };
+    }
+
+    if (!result || !result.ok) {
+      const list = (result && result.errors) ? result.errors : ["Save failed."];
+      showError(list.join(" "));
+      saveBtn.disabled = false;
+      saveBtn.textContent = original;
+      return;
+    }
+
+    const created = result.student || null;
+    close(created);
+
+    if (result.fallback) {
+      setTimeout(() => window.location.reload(), 250);
+    }
+  }
+
+  saveBtn.onclick = save;
+  form.addEventListener("submit", e => { e.preventDefault(); save(); });
+
+  const firstInput = overlay.querySelector('input[name="name"]');
+  if (firstInput) setTimeout(() => firstInput.focus(), 30);
+
+  return closed;
+}
+
+/* ============================================================
+   EDIT STUDENT — ID Number is now editable
+   ============================================================ */
+function ewEditStudentModal(existing) {
+  const v = existing;
+
+  const currentRiskLevel = (typeof EW_RISK !== "undefined")
+    ? EW_RISK.compute(v).level
+    : "low";
+
+  const riskLevels = ["critical", "high", "medium", "low"];
+  const riskLabels = { critical: "Critical", high: "High", medium: "Medium", low: "Low" };
+
+  const bodyHTML = `
+    <form id="ewStudentForm" novalidate>
+      <div class="ew-form-error" hidden></div>
+      <div class="ew-form-grid">
+        ${ewField("name", "Full name", "text", v.name, "required")}
+        ${ewField("id",   "Student ID", "text", v.id,   "required")}
+        ${ewSelectField(
+            "riskLevel",
+            "Risk Level",
+            riskLevels.map(l => riskLabels[l]),
+            riskLabels[currentRiskLevel]
+        )}
+        ${ewField("gpa",        "GPA",              "number", v.gpa,        'step="0.01" min="0" max="4"')}
+        ${ewField("attendance", "Attendance (%)",   "number", v.attendance, 'min="0" max="100"')}
+        ${ewField("missed",     "Missed Activities","number", v.missed,     'min="0"')}
+        ${ewSelectField("caseStatus", "Case Status",
+              ["Open", "In-Progress", "Monitoring", "Resolved"], v.caseStatus)}
+      </div>
+    </form>`;
+
+  const footerHTML = `
+    <button type="button" class="ew-btn ew-btn-ghost" data-role="cancel">Cancel</button>
+    <button type="button" class="ew-btn ew-btn-primary" data-role="save">Save changes</button>`;
+
+  const { overlay, close, closed } = ewShowModal({
+    title: `Edit ${v.name}`,
+    bodyHTML, footerHTML, width: 560
+  });
+
+  const form    = overlay.querySelector("#ewStudentForm");
+  const errBox  = overlay.querySelector(".ew-form-error");
+  const saveBtn = overlay.querySelector('[data-role="save"]');
+
+  const gpaInput   = form.elements["gpa"];
+  const attInput   = form.elements["attendance"];
+  const missInput  = form.elements["missed"];
+  const riskSelect = form.elements["riskLevel"];
+
+  const RISK_PRESETS = {
+    critical: { gpa: 1.60, attendance: 55, missed: 10 },
+    high:     { gpa: 2.00, attendance: 68, missed: 6  },
+    medium:   { gpa: 2.40, attendance: 80, missed: 3  },
+    low:      { gpa: 3.00, attendance: 95, missed: 0  }
+  };
+
+  riskSelect.addEventListener("change", () => {
+    const key = riskSelect.value.toLowerCase();
+    const preset = RISK_PRESETS[key];
+    if (!preset) return;
+    gpaInput.value  = preset.gpa.toFixed(2);
+    attInput.value  = preset.attendance;
+    missInput.value = preset.missed;
+  });
+
+  overlay.querySelector('[data-role="cancel"]').onclick = () => close(null);
+
+  const showError = msg => { errBox.textContent = msg; errBox.hidden = false; };
+
+  async function save() {
+    const name       = form.elements["name"].value.trim();
+    const id         = form.elements["id"].value.trim();
+    const gpa        = parseFloat(gpaInput.value);
+    const attendance = parseInt(attInput.value, 10);
+    const missed     = parseInt(missInput.value, 10);
+    const riskLevel  = riskSelect.value.toLowerCase();
+    const caseStatus = form.elements["caseStatus"].value;
+
+    const errs = [];
+    if (!name) errs.push("Name is required.");
+    if (!id)   errs.push("Student ID is required.");
+    if (isNaN(gpa) || gpa < 0 || gpa > 4)
+      errs.push("GPA must be between 0 and 4.");
+    if (isNaN(attendance) || attendance < 0 || attendance > 100)
+      errs.push("Attendance must be between 0 and 100.");
+    if (isNaN(missed) || missed < 0)
+      errs.push("Missed activities must be a non-negative number.");
+    if (errs.length) { showError(errs.join(" ")); return; }
+
+    errBox.hidden = true;
+    saveBtn.disabled = true;
+    const original = saveBtn.textContent;
+    saveBtn.textContent = "Saving…";
+
+    const payload = {
+      name:       name,
+      id:         id,
+      gpa:        gpa,
+      attendance: attendance,
+      missed:     missed,
+      caseStatus: caseStatus,
+      riskLevel:  riskLevel
+    };
+
+    let result;
+    try {
+      if (typeof EW_DB !== "undefined" && typeof EW_DB.updateStudent === "function") {
+        result = await EW_DB.updateStudent(v.id, payload);
+      } else {
+        const res = await fetch(`student.php?id=${encodeURIComponent(v.id)}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const body = await res.json().catch(() => null);
+        if (!res.ok) {
+          result = { ok: false, errors: (body && body.errors) || [`HTTP ${res.status}`] };
+        } else {
+          result = { ok: true, student: body };
+        }
+      }
+    } catch (err) {
+      console.error("[EarlyWatch] Edit failed:", err);
+      result = { ok: false, errors: ["Could not reach the server. Is Apache/PHP/MySQL running?"] };
+    }
+
+    if (!result || !result.ok) {
+      const list = (result && result.errors) ? result.errors : ["Save failed."];
+      showError(list.join(" "));
+      saveBtn.disabled = false;
+      saveBtn.textContent = original;
+      return;
+    }
+
+    close(result.student || null);
+  }
+
+  saveBtn.onclick = save;
+  form.addEventListener("submit", e => { e.preventDefault(); save(); });
+
+  setTimeout(() => { gpaInput.focus(); gpaInput.select(); }, 30);
+
+  return closed;
+}

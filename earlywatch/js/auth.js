@@ -1,7 +1,5 @@
 /* ============================================================
    EarlyWatch — Auth layer (PHP/MySQL)
-   Login and register hit api/login.php and api/register.php.
-   Session kept in sessionStorage.
    ============================================================ */
 
 const EW_SESSION_KEY = "earlywatch.session";
@@ -16,7 +14,7 @@ const EW_ROLE_REDIRECT = {
    Login
    ------------------------------------------------------------ */
 async function ewLogin(email, password) {
-  const res = await fetch("api/login.php", {
+  const res = await fetch("login.php", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
@@ -42,10 +40,10 @@ async function ewLogin(email, password) {
 }
 
 /* ------------------------------------------------------------
-   Register (student-only from the UI, but accepts any role)
+   Register (student-only from the UI)
    ------------------------------------------------------------ */
 async function ewRegister(data) {
-  const res = await fetch("api/register.php", {
+  const res = await fetch("register.php", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
@@ -54,6 +52,31 @@ async function ewRegister(data) {
   const body = await res.json();
   if (!res.ok) return { ok: false, errors: body.errors || ["Registration failed."] };
   return { ok: true };
+}
+
+/* ------------------------------------------------------------
+   Forgot / Reset password
+   ------------------------------------------------------------ */
+async function ewForgotPassword(email) {
+  const res = await fetch("forgot-password.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email })
+  });
+  const body = await res.json();
+  if (!res.ok) return { ok: false, errors: body.errors || ["Request failed."] };
+  return { ok: true, ...body };
+}
+
+async function ewResetPassword(token, password) {
+  const res = await fetch("reset-password.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, password })
+  });
+  const body = await res.json();
+  if (!res.ok) return { ok: false, errors: body.errors || ["Reset failed."] };
+  return { ok: true, ...body };
 }
 
 /* ------------------------------------------------------------
@@ -66,9 +89,17 @@ function ewCurrentUser() {
   } catch (err) { return null; }
 }
 
-function ewLogout() {
+async function ewLogout() {
+  // Clear client state.
   sessionStorage.removeItem(EW_SESSION_KEY);
-  window.location.href = "index.html";
+
+  // Tell the server to destroy the session too.
+  try {
+    await fetch("logout.php", { method: "POST", credentials: "same-origin" });
+  } catch (_) { /* offline is fine */ }
+
+  // Replace (not assign) so the back button can't restore the dashboard.
+  window.location.replace("index.html");
 }
 
 function ewRedirectFor(role) {
@@ -76,7 +107,7 @@ function ewRedirectFor(role) {
 }
 
 /* ------------------------------------------------------------
-   Page guard
+   Page guard + back-button trap
    ------------------------------------------------------------ */
 function ewGuard(requiredRole) {
   const user = ewCurrentUser();
@@ -89,6 +120,17 @@ function ewGuard(requiredRole) {
     window.location.replace(ewRedirectFor(user.role));
     return null;
   }
+
+  // Block the back button from restoring cached protected pages.
+  history.pushState(null, "", location.href);
+  window.addEventListener("popstate", function () {
+    if (!ewCurrentUser()) {
+      window.location.replace("index.html");
+    } else {
+      history.pushState(null, "", location.href);
+    }
+  });
+
   return user;
 }
 

@@ -17,24 +17,34 @@ if ($method === "POST") {
 
     $errors = [];
     $name   = trim((string)($d["name"] ?? ""));
-    $id     = trim((string)($d["id"]   ?? ""));
 
     if ($name === "") $errors[] = "Name is required.";
-    if ($id   === "") $errors[] = "Student ID is required.";
     if ($errors) fail_many($errors, 400);
 
-    $exists = $pdo->prepare("SELECT 1 FROM students WHERE id = ?");
-    $exists->execute([$id]);
-    if ($exists->fetch()) fail("A student with that ID already exists.", 409);
+    // Sequential ID (never reused).
+    $prefix = trim((string)($d["idPrefix"] ?? date("Y")));
+    $id     = trim((string)($d["id"] ?? ""));
+    if ($id === "") {
+        $id = next_student_id($pdo, $prefix);
+    } else {
+        $exists = $pdo->prepare("SELECT 1 FROM students WHERE id = ?");
+        $exists->execute([$id]);
+        if ($exists->fetch()) fail("A student with that ID already exists.", 409);
+    }
+
+    // Get the seq_no that this ID consumed.
+    $seqStmt = $pdo->query("SELECT MAX(seq_no) FROM students");
+    $nextSeq = ((int)$seqStmt->fetchColumn()) + 1;
 
     $stmt = $pdo->prepare(
         "INSERT INTO students
-         (id, name, initials, course, section, adviser,
+         (id, seq_no, name, initials, course, section, adviser,
           gpa, attendance, missed, failed_subjects, case_status)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
     );
     $stmt->execute([
         $id,
+        $nextSeq,
         $name,
         initials_from($name),
         $d["course"]        ?? "",

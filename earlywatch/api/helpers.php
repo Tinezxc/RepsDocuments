@@ -18,9 +18,7 @@ function json_input(): array {
 function json_out($data, int $status = 200): void {
     http_response_code($status);
     header("Content-Type: application/json; charset=utf-8");
-    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-    header("Pragma: no-cache");
-    header("Expires: 0");
+    header("Cache-Control: no-store");
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
@@ -57,54 +55,10 @@ function today(): string {
     return date("Y-m-d");
 }
 
-/* ---------- Password security ---------- */
-function hash_password(string $plain): string {
-    return password_hash($plain, PASSWORD_DEFAULT);
-}
-
-function verify_password(string $plain, string $hash): bool {
-    return password_verify($plain, $hash);
-}
-
-/* Password policy: 8–20 chars, at least one letter and one symbol. */
-function validate_password_strength(string $password): array {
-    $errors = [];
-    $len = strlen($password);
-    if ($len < 8)  $errors[] = "Password must be at least 8 characters long.";
-    if ($len > 20) $errors[] = "Password must not exceed 20 characters.";
-    if (!preg_match('/[A-Za-z]/', $password)) {
-        $errors[] = "Password must include at least one letter.";
-    }
-    if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};\':"\\\\|,.<>\/?~`]/', $password)) {
-        $errors[] = "Password must include at least one symbol (e.g. ! @ # $ % ^ & *).";
-    }
-    return $errors;
-}
-
-/* ---------- Unique sequential student IDs (never reused) ---------- */
-function next_student_id(PDO $pdo, string $prefix = ""): string {
-    // Insert a row into id_sequence to consume the auto-increment value.
-    $pdo->exec("INSERT INTO id_sequence () VALUES ()");
-    $seq = (int) $pdo->lastInsertId();
-
-    // Never reuse: if the student with this seq already exists (shouldn't),
-    // bump until we find a free slot.
-    do {
-        $candidate = ($prefix !== "" ? $prefix . "-" : "") . str_pad((string)$seq, 5, "0", STR_PAD_LEFT);
-        $chk = $pdo->prepare("SELECT 1 FROM students WHERE seq_no = ?");
-        $chk->execute([$seq]);
-        if (!$chk->fetch()) break;
-        $seq++;
-    } while (true);
-
-    return $candidate;
-}
-
 /* ---------- Row → API shape mappers ---------- */
 function student_row(array $r): array {
     return [
         "id"             => $r["id"],
-        "seqNo"          => (int) ($r["seq_no"] ?? 0),
         "name"           => $r["name"],
         "initials"       => $r["initials"],
         "course"         => $r["course"],

@@ -63,12 +63,7 @@
           </div>
 
           <div class="form-group">
-            <label for="email">
-              Email address
-              <span style="color: #6b7280; font-weight: 400">
-                (must be @cmdi.edu.ph)
-              </span>
-            </label>
+            <label for="email">Email address</label>
             <input
               type="email"
               id="email"
@@ -89,32 +84,15 @@
           </div>
 
           <div class="form-group">
-  <label for="password">
-    Password
-    <span style="color: #6b7280; font-weight: 400">
-      (8–20 characters, must include a letter and a symbol)
-    </span>
-  </label>
-  <div class="password-wrapper">
-    <input
-      type="password"
-      id="password"
-      placeholder="e.g. MyPass1!"
-      autocomplete="new-password"
-      required
-      minlength="8"
-      maxlength="20"
-    />
-    <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none"
-           stroke="currentColor" stroke-width="2" stroke-linecap="round"
-           stroke-linejoin="round">
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-        <circle cx="12" cy="12" r="3"/>
-      </svg>
-    </button>
-  </div>
-</div>
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              placeholder="8 letters"
+              autocomplete="new-password"
+              required
+            />
+          </div>
 
           <div class="form-group">
             <label for="confirm">Confirm password</label>
@@ -124,7 +102,6 @@
               placeholder="Re-enter password"
               autocomplete="new-password"
               required
-              maxlength="8"
             />
           </div>
 
@@ -152,10 +129,6 @@
       const successBox = document.getElementById("registerSuccess");
       const submitBtn = document.getElementById("registerBtn");
 
-      /* ---- Validation rules (kept in sync with register.php) ---- */
-      const ALLOWED_DOMAIN = "cmdi.edu.ph";
-      const SYMBOL_RE      = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/;
-
       function showError(msg) {
         errorBox.textContent = msg;
         errorBox.hidden = false;
@@ -173,17 +146,6 @@
         successBox.textContent = "";
       }
 
-      /* Live feedback as the user types an email */
-      emailInput.addEventListener("blur", () => {
-        const email = emailInput.value.trim().toLowerCase();
-        if (!email) return;
-        if (!email.endsWith("@" + ALLOWED_DOMAIN)) {
-          showError(`Email must end with @${ALLOWED_DOMAIN}.`);
-        } else {
-          clearMessages();
-        }
-      });
-
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         clearMessages();
@@ -191,37 +153,16 @@
         const data = {
           role: "student",
           name: nameInput.value.trim(),
-          email: emailInput.value.trim().toLowerCase(),
+          email: emailInput.value.trim(),
           password: passInput.value,
           confirm: confirmInput.value,
           studentId: studentIdEl.value.trim() || null,
         };
 
-        /* ---- Required fields ---- */
         if (!data.name || !data.email || !data.password || !data.confirm) {
           showError("Please fill in all required fields.");
           return;
         }
-
-        /* ---- Email domain check ---- */
-        if (!data.email.endsWith("@" + ALLOWED_DOMAIN)) {
-          showError(`Email address must end with @${ALLOWED_DOMAIN}.`);
-          return;
-        }
-
-        /* ---- Password rules: exactly 8 chars, at least one symbol ---- */
-        if (data.password.length !== 8) {
-          showError("Password must be exactly 8 characters long.");
-          return;
-        }
-        if (!SYMBOL_RE.test(data.password)) {
-          showError(
-            "Password must include at least one symbol (e.g. ! @ # $ % ^ & * )."
-          );
-          return;
-        }
-
-        /* ---- Match check ---- */
         if (data.password !== data.confirm) {
           showError("Passwords do not match.");
           return;

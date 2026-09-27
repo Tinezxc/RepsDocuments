@@ -539,11 +539,34 @@ function ewInitRecordsPage() {
     }
 
     const row = e.target.closest("tr[data-student-id]");
-    if (row) window.location.href = `student-profile.html?id=${row.dataset.studentId}`;
+        if (row) window.location.href = `instructor-student-detail.html?id=${row.dataset.studentId}`;
   });
 
-  EW_DB.subscribe(apply);
-  apply();
+    /* Skeleton first */
+  if (window.EW_SKEL) {
+    window.EW_SKEL.tableRows(tbody, 5, {
+      cols: [
+        { type: "student" },
+        { type: "stack", w1: 160, w2: 70 },
+        { w: 90 },
+        { w: 50 },
+        { w: 80 },
+        { w: 60 },
+        { w: 90 },
+        { w: 140 },
+        { type: "actions" }
+      ]
+    });
+  }
+
+  Promise.all([
+    (EW_DB && EW_DB.ready) ? EW_DB.ready : Promise.resolve(),
+    new Promise(r => setTimeout(r, 350))
+  ]).then(() => {
+    apply();
+    tbody.classList.add("skel-reveal");
+    EW_DB.subscribe(apply);
+  });
 }
 
 /* ============================================================
@@ -609,8 +632,39 @@ function ewInitDashboardPage() {
     ewRenderRecordsTable(tbody, priority);
   }
 
-  EW_DB.subscribe(apply);
-  apply();
+    /* Skeleton for metrics + table + progress widgets */
+  if (window.EW_SKEL) {
+    window.EW_SKEL.metricCards(document.querySelector(".metrics-grid"), 4);
+    window.EW_SKEL.tableRows(
+      tbody,
+      5,
+      { cols: [
+        { type: "student" },
+        { type: "stack", w1: 160, w2: 70 },
+        { w: 90 },
+        { w: 50 },
+        { w: 60 },
+        { w: 60 },
+        { w: 90 },
+        { w: 140 },
+        { type: "actions" }
+      ]}
+    );
+    document.querySelectorAll(".progress-list").forEach(el => {
+      window.EW_SKEL.widgetCard(el, 4);
+    });
+  }
+
+  Promise.all([
+    (EW_DB && EW_DB.ready) ? EW_DB.ready : Promise.resolve(),
+    new Promise(r => setTimeout(r, 350))
+  ]).then(() => {
+    apply();
+    document.querySelector(".metrics-grid")?.classList.add("skel-reveal");
+    tbody.classList.add("skel-reveal");
+    document.querySelectorAll(".progress-list").forEach(el => el.classList.add("skel-reveal"));
+    EW_DB.subscribe(apply);
+  });
 }
 
 /* ============================================================
@@ -693,8 +747,16 @@ function ewInitAlertsPage() {
   const ackAllBtn = document.querySelector(".btn-acknowledge-all");
   if (ackAllBtn) ackAllBtn.addEventListener("click", () => EW_DB.alerts.acknowledgeAll());
 
-  EW_DB.subscribe(render);
-  render();
+    if (window.EW_SKEL) window.EW_SKEL.alertCards(list, 5);
+
+  Promise.all([
+    (EW_DB && EW_DB.ready) ? EW_DB.ready : Promise.resolve(),
+    new Promise(r => setTimeout(r, 350))
+  ]).then(() => {
+    render();
+    list.classList.add("skel-reveal");
+    EW_DB.subscribe(render);
+  });
 }
 
 /* ============================================================
@@ -755,8 +817,16 @@ function ewInitInterventionsPage() {
     }).join("");
   }
 
-  EW_DB.subscribe(render);
-  render();
+    if (window.EW_SKEL) window.EW_SKEL.interventionCards(list, 4);
+
+  Promise.all([
+    (EW_DB && EW_DB.ready) ? EW_DB.ready : Promise.resolve(),
+    new Promise(r => setTimeout(r, 350))
+  ]).then(() => {
+    render();
+    list.classList.add("skel-reveal");
+    EW_DB.subscribe(render);
+  });
 }
 
 /* ============================================================
@@ -830,3 +900,239 @@ function ewInitStudentDashboard() {
   EW_DB.subscribe(render);
   render();
 }
+
+/* ============================================================
+   ADMIN STUDENT FORM — edit everything, including credentials
+   ============================================================ */
+function ewAdminStudentFormModal(existing) {
+  const s = existing;
+  const v = s;
+
+  /* --- Look up the linked user (for email + password) --- */
+  const linkedUser = (function () {
+    try {
+      return EW_DB.users.all().find(u => u.studentId === s.id) || null;
+    } catch (_) { return null; }
+  })();
+
+  const currentRiskLevel = (typeof EW_RISK !== "undefined")
+    ? EW_RISK.compute(v).level
+    : "low";
+
+  const riskLevels = ["critical", "high", "medium", "low"];
+  const riskLabels = { critical: "Critical", high: "High", medium: "Medium", low: "Low" };
+
+  const bodyHTML = `
+    <form id="ewAdminStudentForm" novalidate>
+      <div class="ew-form-error" hidden></div>
+
+      <!-- ============ Identity ============ -->
+      <div class="ew-section-label">Identity</div>
+      <div class="ew-form-grid">
+        ${ewField("name",    "Full Name",   "text", v.name)}
+        ${ewField("id",      "School ID",   "text", v.id, 'maxlength="16"')}
+        ${ewField("email",   "Email",       "email", linkedUser ? linkedUser.email : "")}
+        ${ewField("password","Password",    "text",  linkedUser ? linkedUser.password : "")}
+      </div>
+
+      <!-- ============ Academic ============ -->
+      <div class="ew-section-label" style="margin-top:1.1rem;">Academic</div>
+      <div class="ew-form-grid">
+        ${ewField("course",  "Course",      "text", v.course  || "")}
+        ${ewField("section", "Section",     "text", v.section || "")}
+        ${ewSelectField("riskLevel", "Risk Level",
+              riskLevels.map(l => riskLabels[l]),
+              riskLabels[currentRiskLevel])}
+        ${ewSelectField("caseStatus", "Case Status",
+              ["Open", "In-Progress", "Monitoring", "Resolved"], v.caseStatus)}
+        ${ewField("gpa",        "GPA",              "number", v.gpa,        'step="0.01" min="0" max="4"')}
+        ${ewField("attendance", "Attendance (%)",   "number", v.attendance, 'min="0" max="100"')}
+        ${ewField("missed",     "Missed Activities","number", v.missed,     'min="0"')}
+      </div>
+    </form>`;
+
+  const footerHTML = `
+    <button type="button" class="ew-btn ew-btn-ghost" data-role="cancel">Cancel</button>
+    <button type="button" class="ew-btn ew-btn-primary" data-role="save">Save changes</button>`;
+
+  const { overlay, close, closed } = ewShowModal({
+    title: `Edit ${v.name}`,
+    bodyHTML,
+    footerHTML,
+    width: 620
+  });
+
+  const form    = overlay.querySelector("#ewAdminStudentForm");
+  const errBox  = overlay.querySelector(".ew-form-error");
+  const saveBtn = overlay.querySelector('[data-role="save"]');
+
+  const idInput    = form.elements["id"];
+  const emailInput = form.elements["email"];
+  const passInput  = form.elements["password"];
+  const gpaInput   = form.elements["gpa"];
+  const attInput   = form.elements["attendance"];
+  const missInput  = form.elements["missed"];
+  const riskSelect = form.elements["riskLevel"];
+
+  /* Auto-format School ID as the admin types */
+  if (idInput && typeof ewFormatSchoolIdInput === "function") {
+    idInput.addEventListener("input", function () {
+      const formatted = ewFormatSchoolIdInput(idInput.value);
+      if (formatted !== idInput.value) idInput.value = formatted;
+    });
+  }
+
+  /* Risk-level presets (same as instructor modal) */
+  const RISK_PRESETS = {
+    critical: { gpa: 1.60, attendance: 55, missed: 10 },
+    high:     { gpa: 2.00, attendance: 68, missed: 6  },
+    medium:   { gpa: 2.40, attendance: 80, missed: 3  },
+    low:      { gpa: 3.00, attendance: 95, missed: 0  }
+  };
+  riskSelect.addEventListener("change", () => {
+    const key = riskSelect.value.toLowerCase();
+    const preset = RISK_PRESETS[key];
+    if (!preset) return;
+    gpaInput.value  = preset.gpa.toFixed(2);
+    attInput.value  = preset.attendance;
+    missInput.value = preset.missed;
+  });
+
+  overlay.querySelector('[data-role="cancel"]').onclick = () => close(null);
+
+  const showError  = msg => { errBox.textContent = msg; errBox.hidden = false; };
+  const clearError = () => { errBox.hidden = true; errBox.textContent = ""; };
+
+  async function save() {
+    clearError();
+
+    const newName    = form.elements["name"].value.trim();
+    const newId      = idInput.value.trim().toUpperCase();
+    const newEmail   = emailInput.value.trim().toLowerCase();
+    const newPwd     = passInput.value;
+    const course     = form.elements["course"].value.trim();
+    const section    = form.elements["section"].value.trim();
+    const caseStatus = form.elements["caseStatus"].value;
+    const riskLevel  = riskSelect.value.toLowerCase();
+    const gpa        = parseFloat(gpaInput.value);
+    const attendance = parseInt(attInput.value, 10);
+    const missed     = parseInt(missInput.value, 10);
+
+    const errs = [];
+    if (!newName) errs.push("Name is required.");
+
+    if (typeof ewValidateSchoolId === "function") {
+      const sidCheck = ewValidateSchoolId(newId);
+      if (!sidCheck.ok) errs.push(...sidCheck.errors);
+    } else if (!newId) {
+      errs.push("School ID is required.");
+    }
+
+    if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+      errs.push("Please enter a valid email address.");
+    }
+
+    if (newPwd && typeof ewValidatePassword === "function") {
+      const pwCheck = ewValidatePassword(newPwd);
+      if (!pwCheck.ok) errs.push(...pwCheck.errors);
+    }
+
+    if (isNaN(gpa) || gpa < 0 || gpa > 4)
+      errs.push("GPA must be between 0 and 4.");
+    if (isNaN(attendance) || attendance < 0 || attendance > 100)
+      errs.push("Attendance must be between 0 and 100.");
+    if (isNaN(missed) || missed < 0)
+      errs.push("Missed activities must be a non-negative number.");
+
+    if (errs.length) { showError(errs.join(" ")); return; }
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Saving…";
+
+    /* ----- 1) Update the student record (including new ID / name) ----- */
+    const studentPatch = {
+      name:       newName,
+      id:         newId,
+      course,
+      section,
+      caseStatus,
+      gpa,
+      attendance,
+      missed
+    };
+
+    /* If the ID changed, we must also update alerts / interventions / user links.
+       Easiest path: delete + re-add under the new ID. */
+    let updated;
+    try {
+      if (newId !== s.id) {
+        /* Preserve subjects, history, notes */
+        const snapshot = {
+          ...EW_DB.students.get(s.id),
+          ...studentPatch,
+          initials: newName.split(/\s+/).slice(0, 2).map(p => p[0].toUpperCase()).join("")
+        };
+        await EW_DB.deleteStudent(s.id);
+        const res = await EW_DB.addStudent(snapshot);
+        if (!res.ok) throw new Error((res.errors || ["Could not rename student."]).join(" "));
+        updated = res.student;
+      } else {
+        const res = await EW_DB.updateStudent(s.id, studentPatch);
+        if (!res.ok) throw new Error((res.errors || ["Could not update student."]).join(" "));
+        updated = res.student;
+      }
+    } catch (err) {
+      showError(err.message || "Could not save student record.");
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Save changes";
+      return;
+    }
+
+    /* ----- 2) Update the linked user account (email + password + ID link) ----- */
+    if (linkedUser) {
+      try {
+        const store = JSON.parse(localStorage.getItem("earlywatch.db.v1") || "{}");
+        if (Array.isArray(store.users)) {
+          const target = store.users.find(u =>
+            u.email.toLowerCase() === linkedUser.email.toLowerCase()
+          );
+          if (target) {
+            /* Uniqueness check when email changes */
+            if (newEmail && newEmail !== target.email.toLowerCase()) {
+              const clash = store.users.some(u =>
+                u.email.toLowerCase() === newEmail && u !== target
+              );
+              if (clash) {
+                showError("Another account already uses that email.");
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Save changes";
+                return;
+              }
+              target.email = newEmail;
+            }
+            if (newPwd) target.password = newPwd;
+            target.studentId = newId;
+            target.name = newName;
+            if (target.initials !== undefined) {
+              target.initials = newName.split(/\s+/).slice(0, 2).map(p => p[0].toUpperCase()).join("");
+            }
+            localStorage.setItem("earlywatch.db.v1", JSON.stringify(store));
+            if (typeof EW_DB.refresh === "function") EW_DB.refresh();
+          }
+        }
+      } catch (err) {
+        console.warn("[EarlyWatch] Could not update linked user:", err);
+      }
+    }
+
+    close(updated);
+  }
+
+  saveBtn.onclick = save;
+  form.addEventListener("submit", e => { e.preventDefault(); save(); });
+
+  setTimeout(() => form.elements["name"].focus(), 40);
+
+  return closed;
+}
+window.ewAdminStudentFormModal = ewAdminStudentFormModal;

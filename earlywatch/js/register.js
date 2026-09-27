@@ -57,21 +57,33 @@
       gender:    genderEl.value,
       address:   addressEl.value.trim(),
       email:     emailInput.value.trim(),
-      studentId: studentIdEl.value.trim() || null,
+      studentId: studentIdEl.value.trim(),
       password:  passInput.value,
       confirm:   confirmInput.value
     };
 
-    /* ---------- Validation ---------- */
+    /* ---------- Client-side validation (mirrors ewRegister) ---------- */
     if (!data.firstName || !data.lastName) { showError("Please enter your first and last name."); return; }
     if (!data.gender)                       { showError("Please select your gender / sex."); return; }
     if (!data.address)                      { showError("Please enter your address."); return; }
     if (!data.email)                        { showError("Please enter your email address."); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) { showError("Please enter a valid email address."); return; }
-    if (!data.studentId)                    { showError("Please enter your school ID."); return; }
-    if (!data.password)                     { showError("Please enter a password."); return; }
-    if (data.password.length < 6)           { showError("Password must be at least 6 characters."); return; }
-    if (data.password !== data.confirm)     { showError("Passwords do not match."); return; }
+
+    if (typeof ewValidateSchoolId === "function") {
+      const sidCheck = ewValidateSchoolId(data.studentId);
+      if (!sidCheck.ok) { showError(sidCheck.errors.join(" ")); return; }
+    } else if (!data.studentId) {
+      showError("Please enter your school ID.");
+      return;
+    }
+
+    if (!data.password)                 { showError("Please enter a password."); return; }
+    if (data.password !== data.confirm) { showError("Passwords do not match."); return; }
+
+    if (typeof ewValidatePassword === "function") {
+      const pwCheck = ewValidatePassword(data.password);
+      if (!pwCheck.ok) { showError(pwCheck.errors.join(" ")); return; }
+    }
 
     submitBtn.disabled = true;
     submitBtn.textContent = "Creating account…";

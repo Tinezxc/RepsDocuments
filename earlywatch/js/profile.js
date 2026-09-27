@@ -1,10 +1,17 @@
 /* ============================================================
-   EarlyWatch — Student Profile page
+   EarlyWatch — Student Profile page (adviser + instructor)
    ============================================================ */
 
 (function () {
   const root = document.getElementById("profileRoot");
   const id   = new URLSearchParams(location.search).get("id");
+  const user = ewCurrentUser();
+  const isAdviser = user && user.role === "adviser";
+
+  /* Where the "Back" link and post-delete redirect should go */
+  const RECORDS_URL = isAdviser
+    ? "student-records.html"
+    : "instructor-student-records.html";
 
   function render() {
     const s = id ? EW_DB.students.get(id) : null;
@@ -13,7 +20,7 @@
       root.innerHTML = `<div class="empty-state">
         <h2>Student not found</h2>
         <p class="text-muted">No student matches <code>${ewEsc(id || "(no id)")}</code>.</p>
-        <a class="btn-back" href="student-records.html">← Back to Student Records</a>
+        <a class="btn-back" href="${RECORDS_URL}">← Back to Student Records</a>
       </div>`;
       if (window.lucide) lucide.createIcons();
       return;
@@ -111,9 +118,21 @@
       </div>`).join("")
       : `<p class="text-muted">No adviser notes yet.</p>`;
 
+    /* Only advisers can edit / delete student records */
+    const actionsHTML = isAdviser
+      ? `<div class="profile-actions">
+          <button type="button" class="ew-btn ew-btn-ghost" data-action="edit-profile">
+            <i data-lucide="pencil"></i> Edit
+          </button>
+          <button type="button" class="ew-btn ew-btn-danger" data-action="delete-profile">
+            <i data-lucide="trash-2"></i> Delete
+          </button>
+        </div>`
+      : "";
+
     root.innerHTML = `
       <header class="header profile-header">
-        <a class="btn-back" href="student-records.html">
+        <a class="btn-back" href="${RECORDS_URL}">
           <i data-lucide="arrow-left"></i> Back
         </a>
         <div class="profile-identity">
@@ -124,14 +143,7 @@
           </div>
         </div>
 
-        <div class="profile-actions">
-          <button type="button" class="ew-btn ew-btn-ghost" data-action="edit-profile">
-            <i data-lucide="pencil"></i> Edit
-          </button>
-          <button type="button" class="ew-btn ew-btn-danger" data-action="delete-profile">
-            <i data-lucide="trash-2"></i> Delete
-          </button>
-        </div>
+        ${actionsHTML}
 
         <div class="risk-hero risk-hero-${risk.level}">
           <div class="risk-hero-score">${risk.score}</div>
@@ -213,6 +225,10 @@
   root.addEventListener("click", async e => {
     const btn = e.target.closest("[data-action]");
     if (!btn) return;
+
+    /* Only advisers may edit / delete */
+    if (!isAdviser) return;
+
     const s = EW_DB.students.get(id);
     if (!s) return;
 
@@ -235,7 +251,7 @@
       });
       if (ok) {
         EW_DB.deleteStudent(id);
-        window.location.href = "student-records.html";
+        window.location.href = RECORDS_URL;
       }
     }
   });

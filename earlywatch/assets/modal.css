@@ -745,3 +745,376 @@
   }
 }
 
+/* ============================================================
+   Guarantee that [hidden] elements stay hidden even when the
+   base rule uses display:flex (e.g. .ew-form-error)
+   ============================================================ */
+[hidden] {
+  display: none !important;
+}
+
+/* ============================================================
+   Resend-code row inside the forgot-password modal
+   ============================================================ */
+.ew-resend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.06);
+}
+
+.ew-resend-text {
+  font-size: 0.78rem;
+  color: #8b93a0;
+}
+
+.ew-resend-btn {
+  background: transparent;
+  border: 1px solid rgba(79, 70, 229, 0.35);
+  color: #a5a0ff;
+
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+
+  font-family: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1;
+
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease,
+              color 0.15s ease, transform 0.15s ease;
+}
+
+.ew-resend-btn:hover:not(:disabled) {
+  background: rgba(79, 70, 229, 0.12);
+  border-color: rgba(79, 70, 229, 0.55);
+  color: #c9c5ff;
+  transform: translateY(-1px);
+}
+
+.ew-resend-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.ew-resend-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.ew-resend-btn.is-cooling {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #8b93a0;
+}
+
+.ew-resend-btn.is-sent {
+  background: rgba(42, 157, 143, 0.15);
+  border-color: rgba(42, 157, 143, 0.4);
+  color: #4fd1bd;
+}
+
+/* ============================================================
+   Section labels inside the admin edit-student modal
+   ============================================================ */
+.ew-section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #8b93a0;
+  margin-bottom: 0.65rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+}
+
+/* ============================================================
+   EarlyWatch — Modal / Row Action UI Enhancement
+   Visual-only overrides; existing JS hooks and selectors preserved.
+   ============================================================ */
+
+.row-actions {
+  gap: .5rem;
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.018));
+  border-color: rgba(255,255,255,.075);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+.icon-btn:hover {
+  border-color: rgba(124,118,255,.28);
+  background: linear-gradient(180deg, rgba(124,118,255,.1), rgba(255,255,255,.025));
+  box-shadow:
+    0 8px 20px rgba(0,0,0,.22),
+    0 0 0 3px rgba(124,118,255,.05);
+}
+
+.icon-btn.icon-danger:hover {
+  border-color: rgba(230,57,70,.42);
+  box-shadow:
+    0 8px 20px rgba(0,0,0,.22),
+    0 0 0 3px rgba(230,57,70,.05);
+}
+
+.ew-modal-overlay {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(91,84,246,.09), transparent 35%),
+    rgba(4,6,10,.82);
+  backdrop-filter: blur(10px) saturate(115%);
+  -webkit-backdrop-filter: blur(10px) saturate(115%);
+}
+
+.ew-modal {
+  width: min(100%, 590px);
+  border-radius: 18px;
+  border-color: rgba(255,255,255,.09);
+  background:
+    radial-gradient(500px 240px at 10% 0%, rgba(124,118,255,.07), transparent 65%),
+    linear-gradient(180deg, rgba(26,31,42,.985), rgba(16,20,27,.99));
+  box-shadow:
+    0 40px 100px rgba(0,0,0,.6),
+    0 18px 45px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+.ew-modal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(124,118,255,.1), transparent 25%, transparent 70%, rgba(79,209,189,.04));
+}
+
+.ew-modal-header {
+  min-height: 70px;
+  padding: 1rem 1.2rem;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+  border-bottom-color: rgba(255,255,255,.075);
+}
+
+.ew-modal-header h2 {
+  font-size: 1.08rem;
+  letter-spacing: -.015em;
+}
+
+.ew-modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.025);
+  border-color: rgba(255,255,255,.05);
+}
+
+.ew-modal-close:hover {
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.1);
+}
+
+.ew-modal-body {
+  padding: 1.4rem 1.2rem;
+  scrollbar-width: thin;
+  scrollbar-color: #3a4352 transparent;
+}
+
+.ew-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ew-modal-body::-webkit-scrollbar-thumb {
+  background: #3a4352;
+}
+
+.ew-modal-footer {
+  padding: .95rem 1.2rem 1.05rem;
+  background:
+    linear-gradient(180deg, rgba(8,11,16,.18), rgba(8,11,16,.62));
+  border-top-color: rgba(255,255,255,.075);
+}
+
+.ew-modal-text {
+  color: #b5bdc9;
+  font-size: .87rem;
+}
+
+.ew-form-grid {
+  gap: .95rem;
+}
+
+.ew-section-label {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  color: #a8b0be;
+  letter-spacing: .1em;
+}
+
+.ew-section-label::before {
+  content: "";
+  width: 4px;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #776fff, #4fd1bd);
+  box-shadow: 0 0 12px rgba(119,111,255,.22);
+}
+
+.ew-field {
+  gap: .45rem;
+}
+
+.ew-field span {
+  color: #aeb6c3;
+  font-size: .76rem;
+}
+
+.ew-field input,
+.ew-field select {
+  min-height: 44px;
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.008)),
+    #0c1016;
+  border-color: rgba(255,255,255,.085);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.02);
+}
+
+.ew-field input:hover,
+.ew-field select:hover {
+  border-color: rgba(255,255,255,.15);
+  background: #10151d;
+}
+
+.ew-field input:focus,
+.ew-field select:focus {
+  border-color: #605af2;
+  background: #10151c;
+  box-shadow:
+    0 0 0 3px rgba(91,84,246,.12),
+    0 8px 22px rgba(0,0,0,.12);
+}
+
+.ew-field input[readonly] {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.012), rgba(255,255,255,.004)),
+    #080b10;
+  border-color: rgba(255,255,255,.045);
+}
+
+.ew-field input[readonly]::after {
+  content: "";
+}
+
+.ew-form-error,
+.ew-form-success {
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+.ew-form-error {
+  border-color: rgba(230,57,70,.32);
+}
+
+.ew-form-success {
+  border-color: rgba(34,197,94,.25);
+}
+
+.ew-btn {
+  min-height: 40px;
+  border-radius: 10px;
+}
+
+.ew-btn-primary {
+  background: linear-gradient(135deg, #625bf4, #5048dd);
+  border-color: rgba(255,255,255,.08);
+  box-shadow:
+    0 8px 22px rgba(79,70,229,.2),
+    inset 0 1px 0 rgba(255,255,255,.1);
+}
+
+.ew-btn-primary:hover {
+  background: linear-gradient(135deg, #716aff, #5a52eb);
+  box-shadow:
+    0 11px 28px rgba(79,70,229,.27),
+    0 0 0 3px rgba(91,84,246,.06);
+}
+
+.ew-btn-ghost {
+  background: rgba(255,255,255,.025);
+  border-color: rgba(255,255,255,.08);
+}
+
+.ew-btn-ghost:hover {
+  background: rgba(255,255,255,.065);
+}
+
+.ew-btn-danger {
+  background: linear-gradient(135deg, #e84b59, #d83b49);
+  border-color: rgba(255,255,255,.08);
+}
+
+.ew-btn-danger:hover {
+  background: linear-gradient(135deg, #f25a67, #df414f);
+}
+
+.ew-resend-row {
+  margin-top: 1rem;
+  padding-top: .95rem;
+}
+
+.ew-resend-btn {
+  min-height: 34px;
+  border-radius: 9px;
+}
+
+@media (max-width: 600px) {
+  .ew-modal-overlay {
+    padding: .7rem;
+  }
+
+  .ew-modal {
+    max-height: 94vh;
+    border-radius: 14px;
+  }
+
+  .ew-modal-header {
+    min-height: 60px;
+    padding: .85rem 1rem;
+  }
+
+  .ew-modal-body {
+    padding: 1.05rem;
+  }
+
+  .ew-modal-footer {
+    padding: .8rem 1rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .ew-modal {
+    border-radius: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ew-modal-overlay,
+  .ew-modal,
+  .icon-btn,
+  .ew-modal-close,
+  .ew-btn,
+  .ew-field input,
+  .ew-field select {
+    animation: none !important;
+    transition: none !important;
+  }
+}

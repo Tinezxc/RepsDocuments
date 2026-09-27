@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EarlyWatch - Student Profile</title>
+  <link rel="stylesheet" href="assets/student-records.css">
+  <link rel="stylesheet" href="assets/modal.css">
+  <link rel="stylesheet" href="assets/student-profile.css">
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon"><i data-lucide="layers"></i></div>
+      <div>
+        <div class="brand-name">EarlyWatch</div>
+        <div class="brand-sub" data-sidebar-role>Adviser</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="profileSidebarNav">
+      <!-- filled by JS based on role -->
+    </nav>
+    <div class="user-profile">
+      <div class="avatar" data-user-initials>DM</div>
+      <div class="user-info">
+        <div class="user-name" data-user-name>Dr. Carl Domenic Reyes</div>
+        <div class="user-role" data-user-role>Adviser</div>
+      </div>
+      <button type="button" class="logout-btn" onclick="ewLogout()" title="Logout">
+        <i data-lucide="log-out"></i>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main-content" id="profileRoot">
+    <div class="text-muted" style="padding:2rem;">Loading student…</div>
+  </main>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="js/db.js"></script>
+  <script src="js/risk.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Allow both adviser and instructor to view a student profile
+    const _user = ewGuard(["adviser", "instructor"]);
+
+    // Build the correct sidebar navigation for this role
+    (function buildProfileNav() {
+      const nav = document.getElementById("profileSidebarNav");
+      const roleLabel = document.querySelector("[data-sidebar-role]");
+      if (!nav || !_user) return;
+
+      const isAdviser = _user.role === "adviser";
+      if (roleLabel) roleLabel.textContent = isAdviser ? "Adviser" : "Instructor";
+
+      const links = isAdviser
+        ? [
+            { href: "adviser-dashboard.html",    icon: "layout-grid",   label: "Dashboard" },
+            { href: "student-records.html",      icon: "users",         label: "Student Records", active: true },
+            { href: "interventions.html",        icon: "clipboard-list",label: "Interventions" },
+            { href: "alerts.html",               icon: "bell",          label: "Alerts", badge: true },
+            { href: "adviser-profile.html",      icon: "user-circle",   label: "My Profile" }
+          ]
+        : [
+            { href: "instructor-dashboard.html",       icon: "layout-grid",   label: "Dashboard" },
+            { href: "instructor-student-records.html", icon: "users",         label: "Student Records", active: true },
+            { href: "instructor-interventions.html",   icon: "clipboard-list",label: "Interventions" },
+            { href: "instructor-alerts.html",          icon: "bell",          label: "Alerts", badge: true }
+          ];
+
+      nav.innerHTML = links.map(l => `
+        <a href="${l.href}" class="nav-item ${l.active ? "active" : ""}">
+          <i data-lucide="${l.icon}"></i><span>${l.label}</span>
+          ${l.badge ? `<span class="badge red" id="navAlertCount">0</span>` : ""}
+        </a>`).join("");
+
+      // Populate the alert badge
+      const badge = document.getElementById("navAlertCount");
+      if (badge && typeof EW_DB !== "undefined") {
+        badge.textContent = EW_DB.alerts.unread().length;
+      }
+
+      if (window.lucide) lucide.createIcons();
+    })();
+  </script>
+  <script src="js/profile.js"></script>
+</body>
+</html>
